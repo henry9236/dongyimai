@@ -7,6 +7,9 @@
     <groupId>offcn</groupId>
     <artifactId>dongyimai_parent</artifactId>
     <version>1.0</version>
+    <modules>
+        <module>dongyimai_dao</module>
+    </modules>
     <packaging>pom</packaging>
 
 
