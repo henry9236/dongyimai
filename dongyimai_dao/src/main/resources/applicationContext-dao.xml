@@ -29,11 +29,9 @@
         <property name="dataSource" ref="dataSource" />
         <!-- 加载mybatis的全局配置文件 -->
         <property name="configLocation" value="classpath:mybatisConfig.xml" />
-        <property name="mapperLocations" value="classpath:mapper/*.xml"/>
     </bean>
 
     <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-       <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
         <property name="basePackage" value="com.dongyimai.dao" />
     </bean>
 </beans>
