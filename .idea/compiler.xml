@@ -6,7 +6,13 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="dongyimai_shop_web" />
         <module name="dongyimai_dao" />
+        <module name="dongyimai_manager_web" />
+        <module name="dongyimai_sellergoods_service" />
+        <module name="dongyimai_common" />
+        <module name="dongyimai_sellergoods_interface" />
+        <module name="dongyimai_pojo" />
       </profile>
     </annotationProcessing>
   </component>
