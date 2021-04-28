@@ -2,6 +2,7 @@ package com.sellergoods.controller;
 
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.dongyimai.bean.TbBrand;
+import com.dongyimai.result.PageResult;
 import com.sellergoods.service.BrandService;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,4 +19,10 @@ public class BrandController {
     public List<TbBrand> findAll() {
         return brandService.findAll();
     }
+
+    @RequestMapping("/findPage")
+    public PageResult findPage(Integer pageNum, Integer pageSize){
+        return brandService.findPage(pageNum,pageSize);
+    }
+
 }
