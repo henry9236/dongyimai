@@ -21,13 +21,9 @@
 
 	<script type="text/javascript">
 		var app = angular.module('dongyimai',['pagination']);   //声明第三方分页组件
-		app.controller('brandController',function ($scope,$http){
-			$scope.findAll = function (){
-				$http.get('../brand/findAll.do').success(
-						function (response){
-							$scope.list = response;
-				})
-			}
+		app.controller('myController',function ($scope,$http){
+
+
 			//设置分页参数
 			$scope.paginationConf = {
 				'currentPage':1,    //当前页码
@@ -39,21 +35,116 @@
 				}
 			}
 			//分页查询
-			$scope.findPage = function (pageNum,pageSize){
-				$http.get('../brand/findPage.do?pageNum='+pageNum+'&pageSize='+pageSize).success(
+			$scope.findPage = function (pageNum,pageSize,searchBrand){
+				$http.post('../brand/findPage.do?pageNum='+pageNum+'&pageSize='+pageSize,$scope.searchBrand).success(
 						function (response){
 							$scope.list = response.rows;   //分页后的集合
 							$scope.paginationConf.totalItems = response.totalCount;     //总记录数
+							$scope.checkAllChecked = false;
+							$scope.selectIds = [];
 				})
 			}
 
+			$scope.searchBrand = {};
 			$scope.loadList = function (){
-				$scope.findPage($scope.paginationConf.currentPage,$scope.paginationConf.itemsPerPage);
+				$scope.findPage($scope.paginationConf.currentPage,$scope.paginationConf.itemsPerPage,$scope.searchBrand);
 			}
-		})
+
+			//保存品牌
+			$scope.save = function(){
+				//对要保存的数据做正则判断
+
+				if (!/^[A-Za-z]{1}$/.test($scope.brand.firstChar)){
+					alert("首字母输入不符合规范，请重写");
+					return;
+				}
+				var method = 'add.do';
+				if ($scope.brand.id!=null){
+					method = 'update.do';
+				}
+
+				$http.post('../brand/'+method,$scope.brand).success(
+					function(response){
+						if(response.success){
+							$scope.loadList();
+						}
+						else{
+							alert(response.message);
+						}
+					}
+				);
+			}
+
+			//根据id找到要修改的品牌
+			$scope.findOne = function(id){
+				$http.get('../brand/findOne.do?id=' + id).success(
+						function(response){
+							$scope.brand = response;
+						});
+			}
+
+
+			$scope.selectIds = [];
+			//选中/反选
+			$scope.updateSelection = function($event,id){
+				//判断复选框是否被选中
+				if($event.target.checked){
+					$scope.selectIds.push(id);
+				}else{
+					//反选  在集合中移除元素
+					var index = $scope.selectIds.indexOf(id);
+					$scope.selectIds.splice(index,1);
+				}
+			}
+
+			$scope.del = function () {
+				if($scope.selectIds.length==0){
+					alert("请选择要删除的品牌");
+					return;
+				}
+				$http.get('../brand/delete.do?ids='+$scope.selectIds).success(
+						function(response){
+							if(response.success){
+								//删除成功，刷新页面
+								$scope.loadList();
+								//清空ID集合
+								$scope.selectIds = [];
+							}else{
+								//失败则弹出失败提示
+								alert(response.message);
+							}
+						}
+				)
+			}
+
+			$scope.checkAll = function($event){
+				if($event.target.checked){
+
+					//遍历list把是否选中设置true
+					angular.forEach($scope.list,function(brand){
+						//把要删除的id放进selectIds
+						$scope.selectIds.push(brand.id);
+						brand.checked = true;
+					})
+				}else{
+					//清空ID集合
+					$scope.selectIds = [];
+					//遍历list把是否选中设置为false
+					angular.forEach($scope.list,function(brand){
+						brand.checked = false;
+					})
+				}
+			}
+
+			$scope.searchEntity = {};
+			$scope.searchReload = function(){
+				$scope.searchBrand = $scope.searchEntity;
+				$scope.loadList();
+			}
+		});
 	</script>
 </head>
-<body class="hold-transition skin-red sidebar-mini" ng-app="dongyimai" ng-controller="brandController">
+<body class="hold-transition skin-red sidebar-mini" ng-app="dongyimai" ng-controller="myController">
   <!-- .box-body -->
                     <div class="box-header with-border">
                         <h3 class="box-title">品牌管理</h3>
@@ -68,15 +159,18 @@
                             <div class="pull-left">
                                 <div class="form-group form-inline">
                                     <div class="btn-group">
-                                        <button type="button" class="btn btn-default" title="新建" data-toggle="modal" data-target="#editModal" ><i class="fa fa-file-o"></i> 新建</button>
-                                        <button type="button" class="btn btn-default" title="删除" ><i class="fa fa-trash-o"></i> 删除</button>           
+                                        <button type="button" class="btn btn-default" title="新建" data-toggle="modal" data-target="#editModal" ng-click="brand={}"><i class="fa fa-file-o"></i> 新建</button>
+                                        <button type="button" class="btn btn-default" title="删除" ng-click="del()" ><i class="fa fa-trash-o"></i> 删除</button>
                                         <button type="button" class="btn btn-default" title="刷新" onclick="window.location.reload();"><i class="fa fa-refresh"></i> 刷新</button>
+										{{selectIds}}
                                     </div>
                                 </div>
                             </div>
                             <div class="box-tools pull-right">
                                 <div class="has-feedback">
-							                                         
+									品牌名称：<input type="text" ng-model="searchEntity.name"/>
+									首字母：<input type="text" ng-model="searchEntity.firstChar"/>
+									<button ng-click="searchReload()">搜索</button>
                                 </div>
                             </div>
                             <!--工具栏/-->
@@ -86,38 +180,38 @@
 			                      <thead>
 			                          <tr>
 			                              <th class="" style="padding-right:0px">
-			                                  <input id="selall" type="checkbox" class="icheckbox_square-blue">
-			                              </th> 
+			                                  <input id="selall" type="checkbox" class="icheckbox_square-blue" ng-click="checkAll($event)" ng-model="checkAllChecked">
+			                              </th>
 										  <th class="sorting_asc">品牌ID</th>
-									      <th class="sorting">品牌名称</th>									      
-									      <th class="sorting">品牌首字母</th>									     				
+									      <th class="sorting">品牌名称</th>
+									      <th class="sorting">品牌首字母</th>
 					                      <th class="text-center">操作</th>
 			                          </tr>
 			                      </thead>
 			                      <tbody>
 			                          <tr ng-repeat="brand in list">
-			                              <td><input  type="checkbox" ></td>			                              
+			                              <td><input  type="checkbox" ng-click="updateSelection($event,brand.id)"  ng-model="brand.checked" ></td>
 				                          <td>{{brand.id}}</td>
 									      <td>{{brand.name}}</td>
 		                                  <td>{{brand.firstChar}}</td>
-		                                  <td class="text-center">                                           
-		                                 	  <button type="button" class="btn bg-olive btn-xs" data-toggle="modal" data-target="#editModal"  >修改</button>                                           
+		                                  <td class="text-center">
+		                                 	  <button type="button" class="btn bg-olive btn-xs" data-toggle="modal" data-target="#editModal" ng-click="findOne(brand.id)" >修改</button>
 		                                  </td>
 			                          </tr>
 
 			                      </tbody>
 			                  </table>
-			                  <!--数据列表/-->                        
+			                  <!--数据列表/-->
 
                         </div>
                         <!-- 数据表格 /-->
                         <tm-pagination conf="paginationConf"></tm-pagination>
-                        
-                        
-                        
+
+
+
                      </div>
                     <!-- /.box-body -->
-         
+
 <!-- 编辑窗口 -->
 <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog" >
@@ -126,25 +220,25 @@
 			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
 			<h3 id="myModalLabel">品牌编辑</h3>
 		</div>
-		<div class="modal-body">		
+		<div class="modal-body">
 			<table class="table table-bordered table-striped"  width="800px">
 		      	<tr>
 		      		<td>品牌名称</td>
-		      		<td><input  class="form-control" placeholder="品牌名称" >  </td>
-		      	</tr>		      	
+		      		<td><input  class="form-control" placeholder="品牌名称" ng-model="brand.name" >  </td>
+		      	</tr>
 		      	<tr>
 		      		<td>首字母</td>
-		      		<td><input  class="form-control" placeholder="首字母">  </td>
-		      	</tr>		      	
-			 </table>				
+		      		<td><input  class="form-control" placeholder="首字母" ng-model="brand.firstChar">  </td>
+		      	</tr>
+			 </table>
 		</div>
-		<div class="modal-footer">						
-			<button class="btn btn-success" data-dismiss="modal" aria-hidden="true">保存</button>
+		<div class="modal-footer">
+			<button class="btn btn-success" data-dismiss="modal" aria-hidden="true" ng-click="save()">保存</button>
 			<button class="btn btn-default" data-dismiss="modal" aria-hidden="true">关闭</button>
 		</div>
 	  </div>
 	</div>
 </div>
-   
+
 </body>
 </html>
