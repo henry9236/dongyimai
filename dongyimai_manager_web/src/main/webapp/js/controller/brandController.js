@@ -1,16 +1,7 @@
-app.controller('brandController',function ($scope,brandService){
+app.controller('brandController',function ($scope,$controller,brandService){
 
+    $controller('baseController',{$scope:$scope});//继承
 
-    //设置分页参数
-    $scope.paginationConf = {
-        'currentPage':1,    //当前页码
-        'itemsPerPage': 10,  //每页查询记录数
-        'totalItems': 10,    //总记录数
-        'perPageOptions': [10,20,30,40,50],   //每页查询记录数选择器
-        onChange: function (){
-            $scope.loadList();
-        }
-    }
     //分页查询
     $scope.findPage = function (pageNum,pageSize,searchBrand){
         brandService.findPage(pageNum,pageSize,searchBrand).success(
@@ -69,19 +60,6 @@ app.controller('brandController',function ($scope,brandService){
             });
     }
 
-
-    $scope.selectIds = [];
-    //选中/反选
-    $scope.updateSelection = function($event,id){
-        //判断复选框是否被选中
-        if($event.target.checked){
-            $scope.selectIds.push(id);
-        }else{
-            //反选  在集合中移除元素
-            var index = $scope.selectIds.indexOf(id);
-            $scope.selectIds.splice(index,1);
-        }
-    }
 
     $scope.del = function () {
         if($scope.selectIds.length==0){
