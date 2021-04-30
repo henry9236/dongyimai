@@ -18,133 +18,11 @@
 	<script src="../plugins/angularjs/pagination.js"></script>
 	<link rel="stylesheet" href="../plugins/angularjs/pagination.css">
 
-
-	<script type="text/javascript">
-		var app = angular.module('dongyimai',['pagination']);   //声明第三方分页组件
-		app.controller('myController',function ($scope,$http){
-
-
-			//设置分页参数
-			$scope.paginationConf = {
-				'currentPage':1,    //当前页码
-				'itemsPerPage': 10,  //每页查询记录数
-				'totalItems': 10,    //总记录数
-				'perPageOptions': [10,20,30,40,50],   //每页查询记录数选择器
-				onChange: function (){
-					$scope.loadList();
-				}
-			}
-			//分页查询
-			$scope.findPage = function (pageNum,pageSize,searchBrand){
-				$http.post('../brand/findPage.do?pageNum='+pageNum+'&pageSize='+pageSize,$scope.searchBrand).success(
-						function (response){
-							$scope.list = response.rows;   //分页后的集合
-							$scope.paginationConf.totalItems = response.totalCount;     //总记录数
-							$scope.checkAllChecked = false;
-							$scope.selectIds = [];
-				})
-			}
-
-			$scope.searchBrand = {};
-			$scope.loadList = function (){
-				$scope.findPage($scope.paginationConf.currentPage,$scope.paginationConf.itemsPerPage,$scope.searchBrand);
-			}
-
-			//保存品牌
-			$scope.save = function(){
-				//对要保存的数据做正则判断
-
-				if (!/^[A-Za-z]{1}$/.test($scope.brand.firstChar)){
-					alert("首字母输入不符合规范，请重写");
-					return;
-				}
-				var method = 'add.do';
-				if ($scope.brand.id!=null){
-					method = 'update.do';
-				}
-
-				$http.post('../brand/'+method,$scope.brand).success(
-					function(response){
-						if(response.success){
-							$scope.loadList();
-						}
-						else{
-							alert(response.message);
-						}
-					}
-				);
-			}
-
-			//根据id找到要修改的品牌
-			$scope.findOne = function(id){
-				$http.get('../brand/findOne.do?id=' + id).success(
-						function(response){
-							$scope.brand = response;
-						});
-			}
-
-
-			$scope.selectIds = [];
-			//选中/反选
-			$scope.updateSelection = function($event,id){
-				//判断复选框是否被选中
-				if($event.target.checked){
-					$scope.selectIds.push(id);
-				}else{
-					//反选  在集合中移除元素
-					var index = $scope.selectIds.indexOf(id);
-					$scope.selectIds.splice(index,1);
-				}
-			}
-
-			$scope.del = function () {
-				if($scope.selectIds.length==0){
-					alert("请选择要删除的品牌");
-					return;
-				}
-				$http.get('../brand/delete.do?ids='+$scope.selectIds).success(
-						function(response){
-							if(response.success){
-								//删除成功，刷新页面
-								$scope.loadList();
-								//清空ID集合
-								$scope.selectIds = [];
-							}else{
-								//失败则弹出失败提示
-								alert(response.message);
-							}
-						}
-				)
-			}
-
-			$scope.checkAll = function($event){
-				if($event.target.checked){
-
-					//遍历list把是否选中设置true
-					angular.forEach($scope.list,function(brand){
-						//把要删除的id放进selectIds
-						$scope.selectIds.push(brand.id);
-						brand.checked = true;
-					})
-				}else{
-					//清空ID集合
-					$scope.selectIds = [];
-					//遍历list把是否选中设置为false
-					angular.forEach($scope.list,function(brand){
-						brand.checked = false;
-					})
-				}
-			}
-
-			$scope.searchEntity = {};
-			$scope.searchReload = function(){
-				$scope.searchBrand = $scope.searchEntity;
-				$scope.loadList();
-			}
-		});
-	</script>
+	<script type="text/javascript" src="../js/base_pagination.js"></script>
+	<script type="text/javascript" src="../js/service/brandService.js"></script>
+	<script type="text/javascript" src="../js/controller/brandController.js"></script>
 </head>
-<body class="hold-transition skin-red sidebar-mini" ng-app="dongyimai" ng-controller="myController">
+<body class="hold-transition skin-red sidebar-mini" ng-app="dongyimai" ng-controller="brandController">
   <!-- .box-body -->
                     <div class="box-header with-border">
                         <h3 class="box-title">品牌管理</h3>
@@ -162,7 +40,7 @@
                                         <button type="button" class="btn btn-default" title="新建" data-toggle="modal" data-target="#editModal" ng-click="brand={}"><i class="fa fa-file-o"></i> 新建</button>
                                         <button type="button" class="btn btn-default" title="删除" ng-click="del()" ><i class="fa fa-trash-o"></i> 删除</button>
                                         <button type="button" class="btn btn-default" title="刷新" onclick="window.location.reload();"><i class="fa fa-refresh"></i> 刷新</button>
-										{{selectIds}}
+
                                     </div>
                                 </div>
                             </div>
