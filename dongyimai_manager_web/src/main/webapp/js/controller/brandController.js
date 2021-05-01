@@ -1,13 +1,13 @@
 app.controller('brandController',function ($scope,$controller,brandService){
 
-    $controller('baseController',{$scope:$scope});//继承
+    $controller('baseControllerForBrand',{$scope:$scope});//继承
 
     //分页查询
     $scope.findPage = function (pageNum,pageSize,searchBrand){
         brandService.findPage(pageNum,pageSize,searchBrand).success(
             function (response){
                 $scope.list = response.rows;   //分页后的集合
-                $scope.paginationConf.totalItems = response.totalCount;     //总记录数
+                $scope.paginationConf.totalItems = response.total;     //总记录数
                 $scope.checkAllChecked = false;
                 $scope.selectIds = [];
             })
