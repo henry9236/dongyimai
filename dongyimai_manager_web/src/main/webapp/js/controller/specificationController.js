@@ -85,4 +85,8 @@ app.controller('specificationController' ,function($scope,$controller   ,specifi
 		$scope.entity.specificationOptionList.push({});
 	}
 
+	//删除规格选项
+	$scope.deleTableRow=function(index){
+		$scope.entity.specificationOptionList.splice(index,1);
+	}
 });	
