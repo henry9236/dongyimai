@@ -76,5 +76,13 @@ app.controller('specificationController' ,function($scope,$controller   ,specifi
 			}			
 		);
 	}
-    
+
+
+	//定义一个变量存放规格选项行
+	$scope.entity={specificationOptionList:[]};
+	//新增规格选项行
+	$scope.addTableRow=function(){
+		$scope.entity.specificationOptionList.push({});
+	}
+
 });	
