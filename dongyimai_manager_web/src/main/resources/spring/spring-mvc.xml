@@ -29,4 +29,7 @@
     <dubbo:application name="dongyimai-manager-web"/>
     <duboo:registry address="zookeeper://192.168.188.128:2181"/>
     <dubbo:annotation package="com.sellergoods.controller"/>
+
+    <!--导入spring-security的配置文件-->
+    <import resource="spring-security.xml"/>
 </beans>
