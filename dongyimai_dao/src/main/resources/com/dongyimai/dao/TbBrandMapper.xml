@@ -179,4 +179,8 @@
       first_char = #{firstChar,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
+  <!--Map的key值为查询的属性,value为查询的值-->
+  <select id="selectOptionList" resultType="java.util.Map">
+    select id,name as text from tb_brand
+  </select>
 </mapper>

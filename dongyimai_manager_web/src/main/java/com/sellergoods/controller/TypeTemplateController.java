@@ -1,14 +1,12 @@
 package com.sellergoods.controller;
 import java.util.List;
-import java.util.Map;
 
-import com.dongyimai.group.Specification;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.alibaba.dubbo.config.annotation.Reference;
-import com.dongyimai.bean.TbSpecification;
-import com.sellergoods.service.SpecificationService;
+import com.dongyimai.bean.TbTypeTemplate;
+import com.sellergoods.service.TypeTemplateService;
 
 import com.dongyimai.result.PageResult;
 import com.dongyimai.result.Result;
@@ -18,19 +16,19 @@ import com.dongyimai.result.Result;
  *
  */
 @RestController
-@RequestMapping("/specification")
-public class SpecificationController {
+@RequestMapping("/typeTemplate")
+public class TypeTemplateController {
 
 	@Reference
-	private SpecificationService specificationService;
+	private TypeTemplateService typeTemplateService;
 	
 	/**
 	 * 返回全部列表
 	 * @return
 	 */
 	@RequestMapping("/findAll")
-	public List<TbSpecification> findAll(){			
-		return specificationService.findAll();
+	public List<TbTypeTemplate> findAll(){			
+		return typeTemplateService.findAll();
 	}
 	
 	
@@ -40,18 +38,18 @@ public class SpecificationController {
 	 */
 	@RequestMapping("/findPage")
 	public PageResult  findPage(int page,int rows){			
-		return specificationService.findPage(page, rows);
+		return typeTemplateService.findPage(page, rows);
 	}
 	
 	/**
 	 * 增加
-	 * @param specification
+	 * @param typeTemplate
 	 * @return
 	 */
 	@RequestMapping("/add")
-	public Result add(@RequestBody Specification specification){
+	public Result add(@RequestBody TbTypeTemplate typeTemplate){
 		try {
-			specificationService.add(specification);
+			typeTemplateService.add(typeTemplate);
 			return new Result(true, "增加成功");
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -61,13 +59,13 @@ public class SpecificationController {
 	
 	/**
 	 * 修改
-	 * @param specification
+	 * @param typeTemplate
 	 * @return
 	 */
 	@RequestMapping("/update")
-	public Result update(@RequestBody Specification specification){
+	public Result update(@RequestBody TbTypeTemplate typeTemplate){
 		try {
-			specificationService.update(specification);
+			typeTemplateService.update(typeTemplate);
 			return new Result(true, "修改成功");
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -81,8 +79,8 @@ public class SpecificationController {
 	 * @return
 	 */
 	@RequestMapping("/findOne")
-	public Specification findOne(Long id){
-		return specificationService.findOne(id);		
+	public TbTypeTemplate findOne(Long id){
+		return typeTemplateService.findOne(id);		
 	}
 	
 	/**
@@ -93,7 +91,7 @@ public class SpecificationController {
 	@RequestMapping("/delete")
 	public Result delete(Long [] ids){
 		try {
-			specificationService.delete(ids);
+			typeTemplateService.delete(ids);
 			return new Result(true, "删除成功"); 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -108,12 +106,9 @@ public class SpecificationController {
 	 * @return
 	 */
 	@RequestMapping("/search")
-	public PageResult search(@RequestBody TbSpecification specification, int page, int rows  ){
-		return specificationService.findPage(specification, page, rows);		
+	public PageResult search(@RequestBody TbTypeTemplate typeTemplate, int page, int rows  ){
+		return typeTemplateService.findPage(typeTemplate, page, rows);		
 	}
 
-	@RequestMapping("/selectOptionList")
-	public List<Map> selectOptionList(){
-		return specificationService.selectOptionList();
-	}
+
 }

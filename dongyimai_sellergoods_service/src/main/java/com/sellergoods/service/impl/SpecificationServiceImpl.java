@@ -1,5 +1,6 @@
 package com.sellergoods.service.impl;
 import java.util.List;
+import java.util.Map;
 
 import com.dongyimai.bean.TbSpecificationOption;
 import com.dongyimai.bean.TbSpecificationOptionExample;
@@ -126,5 +127,12 @@ public class SpecificationServiceImpl implements SpecificationService {
 		Page<TbSpecification> page= (Page<TbSpecification>)specificationMapper.selectByExample(example);		
 		return new PageResult(page.getTotal(), page.getResult());
 	}
-	
+	/**
+	 * 列表数据
+	 */
+	@Override
+	public List<Map> selectOptionList() {
+		return specificationMapper.selectOptionList();
+	}
+
 }

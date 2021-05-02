@@ -4,6 +4,7 @@ import com.dongyimai.bean.TbBrand;
 import com.dongyimai.result.PageResult;
 
 import java.util.List;
+import java.util.Map;
 
 public interface BrandService {
     /**
@@ -46,5 +47,10 @@ public interface BrandService {
      * @param id
      */
     public void deleteById (Long id) throws Exception;
+
+    /**
+     * 品牌下拉框数据
+     */
+    List<Map> selectOptionList();
 }
 

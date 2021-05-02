@@ -2,22 +2,21 @@ package com.sellergoods.service;
 import java.util.List;
 import java.util.Map;
 
-import com.dongyimai.bean.TbSpecification;
+import com.dongyimai.bean.TbTypeTemplate;
 
-import com.dongyimai.group.Specification;
 import com.dongyimai.result.PageResult;
 /**
  * 服务层接口
  * @author Administrator
  *
  */
-public interface SpecificationService {
+public interface TypeTemplateService {
 
 	/**
 	 * 返回全部列表
 	 * @return
 	 */
-	public List<TbSpecification> findAll();
+	public List<TbTypeTemplate> findAll();
 	
 	
 	/**
@@ -30,13 +29,13 @@ public interface SpecificationService {
 	/**
 	 * 增加
 	*/
-	public void add(Specification specification);
+	public void add(TbTypeTemplate type_template);
 	
 	
 	/**
 	 * 修改
 	 */
-	public void update(Specification specification);
+	public void update(TbTypeTemplate type_template);
 	
 
 	/**
@@ -44,7 +43,7 @@ public interface SpecificationService {
 	 * @param id
 	 * @return
 	 */
-	public Specification findOne(Long id);
+	public TbTypeTemplate findOne(Long id);
 	
 	
 	/**
@@ -59,11 +58,8 @@ public interface SpecificationService {
 	 * @param pageSize 每页记录数
 	 * @return
 	 */
-	public PageResult findPage(TbSpecification specification, int pageNum,int pageSize);
+	public PageResult findPage(TbTypeTemplate type_template, int pageNum,int pageSize);
 
-	/**
-	 * 品牌下拉框数据
-	 */
-	List<Map> selectOptionList();
+
 
 }
