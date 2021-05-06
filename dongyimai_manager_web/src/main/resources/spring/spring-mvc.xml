@@ -17,7 +17,9 @@
                 <property name="supportedMediaTypes" value="application/json"/>
                 <property name="features">
                     <array>
+                        <!--设置没有数据时存入null，不设置的时候对象转成json中的null值会被省略-->
                         <value>WriteMapNullValue</value>
+                        <!--设置Date类型的转换-->
                         <value>WriteDateUseDateFormat</value>
                     </array>
                 </property>
