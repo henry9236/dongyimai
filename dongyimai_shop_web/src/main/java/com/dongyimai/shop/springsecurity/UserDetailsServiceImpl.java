@@ -18,7 +18,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Reference
     private SellerService sellerService;
 
-
     @Override
     public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
         List<GrantedAuthority> grantedAuthorities = new ArrayList<GrantedAuthority>();
@@ -33,6 +32,5 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         }else{
             return  null;
         }
-
     }
 }

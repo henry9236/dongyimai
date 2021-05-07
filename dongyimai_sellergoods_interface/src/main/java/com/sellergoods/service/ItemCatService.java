@@ -1,22 +1,20 @@
 package com.sellergoods.service;
 import java.util.List;
-import java.util.Map;
-
-import com.dongyimai.bean.TbTypeTemplate;
+import com.dongyimai.bean.TbItemCat;
 
 import com.dongyimai.result.PageResult;
 /**
- * 服务层接口
+ * 商品类目服务层接口
  * @author Administrator
  *
  */
-public interface TypeTemplateService {
+public interface ItemCatService {
 
 	/**
 	 * 返回全部列表
 	 * @return
 	 */
-	public List<TbTypeTemplate> findAll();
+	public List<TbItemCat> findAll();
 	
 	
 	/**
@@ -29,13 +27,13 @@ public interface TypeTemplateService {
 	/**
 	 * 增加
 	*/
-	public void add(TbTypeTemplate type_template);
+	public void add(TbItemCat item_cat);
 	
 	
 	/**
 	 * 修改
 	 */
-	public void update(TbTypeTemplate type_template);
+	public void update(TbItemCat item_cat);
 	
 
 	/**
@@ -43,7 +41,7 @@ public interface TypeTemplateService {
 	 * @param id
 	 * @return
 	 */
-	public TbTypeTemplate findOne(Long id);
+	public TbItemCat findOne(Long id);
 	
 	
 	/**
@@ -58,12 +56,12 @@ public interface TypeTemplateService {
 	 * @param pageSize 每页记录数
 	 * @return
 	 */
-	public PageResult findPage(TbTypeTemplate type_template, int pageNum,int pageSize);
-
+	public PageResult findPage(TbItemCat item_cat, int pageNum,int pageSize);
 
 	/**
-	 * 列表数据
+	 * 根据上级ID查询列表
+	 * @param parentId
 	 * @return
 	 */
-	public List<Map> selectList();
+	public PageResult findByParentId(int pageNum,int pageSize,long parentId);
 }
