@@ -2,8 +2,11 @@ package com.sellergoods.service.impl;
 import java.util.List;
 
 import com.dongyimai.bean.TbGoods;
+import com.dongyimai.bean.TbGoodsDesc;
 import com.dongyimai.bean.TbGoodsExample;
+import com.dongyimai.dao.TbGoodsDescMapper;
 import com.dongyimai.dao.TbGoodsMapper;
+import com.dongyimai.group.Goods;
 import com.dongyimai.result.PageResult;
 import com.sellergoods.service.GoodsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +25,9 @@ public class GoodsServiceImpl implements GoodsService {
 
 	@Autowired
 	private TbGoodsMapper goodsMapper;
-	
+
+	@Autowired
+	private TbGoodsDescMapper goodsDescMapper;
 	/**
 	 * 查询全部
 	 */
@@ -45,8 +50,15 @@ public class GoodsServiceImpl implements GoodsService {
 	 * 增加
 	 */
 	@Override
-	public void add(TbGoods goods) {
-		goodsMapper.insert(goods);		
+	public void add(Goods goods) {
+		//设置为审核状态
+		goods.getGoods().setAuditStatus("0");
+		//1,保存网页传来的商品信息到goods表
+		goodsMapper.insert(goods.getGoods());
+		//2，获取返回的主键设置给goodsDesc表
+		goods.getGoodsDesc().setGoodsId(goods.getGoods().getId());
+		//3，保存网页传来的商品信息到goodsDesc表
+		goodsDescMapper.insert(goods.getGoodsDesc());
 	}
 
 	

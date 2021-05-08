@@ -1,5 +1,6 @@
 package com.sellergoods.service;
 import com.dongyimai.bean.TbGoods;
+import com.dongyimai.group.Goods;
 import com.dongyimai.result.PageResult;
 
 import java.util.List;
@@ -28,7 +29,7 @@ public interface GoodsService {
 	/**
 	 * 增加
 	*/
-	public void add(TbGoods goods);
+	public void add(Goods goods);
 	
 	
 	/**

@@ -12,9 +12,7 @@
     <artifactId>dongyimai_shop_web</artifactId>
     <packaging>war</packaging>
 
-    <properties>
-        <webVersion>3.0</webVersion>
-    </properties>
+
     <dependencies>
         <!-- Spring -->
         <dependency>
