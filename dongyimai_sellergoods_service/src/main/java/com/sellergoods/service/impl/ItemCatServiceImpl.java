@@ -111,4 +111,13 @@ public class ItemCatServiceImpl implements ItemCatService {
 		Page<TbItemCat> page = (Page<TbItemCat>)itemCatMapper.selectByExample(tbItemCatExample);
 		return new PageResult(page.getTotal(),page.getResult());
 	}
+
+	@Override
+	public List<TbItemCat> findByParentId(long parentId) {
+		TbItemCatExample tbItemCatExample=new TbItemCatExample();
+		TbItemCatExample.Criteria tbItemCatExample_criteria = tbItemCatExample.createCriteria();
+		tbItemCatExample_criteria.andParentIdEqualTo(parentId);
+		List<TbItemCat> itemCatList = itemCatMapper.selectByExample(tbItemCatExample);
+		return itemCatList;
+	}
 }

@@ -71,4 +71,14 @@ app.controller('baseController',function ($scope){
         }
         return value;
     }
+
+    //在list中查找attributeName == name的对象返回
+    $scope.searchList= function(list,name){
+        for(i=0;i<list.length;++i){
+            if(list[i].attributeName==name){
+                return list[i];
+            }
+        }
+        return null;
+    }
 })
