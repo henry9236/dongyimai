@@ -63,4 +63,11 @@ public interface SellerService {
 	 * @param status
 	 */
 	public void updateStatus(String sellerId,String status);
+
+	/**
+	 * 通过sellerId查询
+	 * @param sellerId
+	 * @return
+	 */
+	public TbSeller findBySellerId(String sellerId);
 }

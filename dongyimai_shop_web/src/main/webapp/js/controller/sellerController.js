@@ -1,4 +1,4 @@
- //控制层 
+   //控制层
 app.controller('sellerController' ,function($scope,$controller   ,sellerService){	
 	
 	$controller('baseController',{$scope:$scope});//继承
@@ -43,14 +43,13 @@ app.controller('sellerController' ,function($scope,$controller   ,sellerService)
 			function(response){
 				if(response.success){
 					//重新查询 
-		        	location.href='shoplogin.html';
+		        	$scope.reloadList();//重新加载
 				}else{
 					alert(response.message);
 				}
 			}		
 		);				
 	}
-	
 	 
 	//批量删除 
 	$scope.dele=function(){			
@@ -76,5 +75,40 @@ app.controller('sellerController' ,function($scope,$controller   ,sellerService)
 			}			
 		);
 	}
-    
+    //更改审核状态
+	$scope.updateStatus = function(sellerId, status){
+		sellerService.updateStatus(sellerId, status).success(
+			function(response){
+				if(response.success){
+					$scope.reloadList();//刷新列表
+				}else{
+					alert("失败");
+				}
+			}
+		);
+	}
+
+	$scope.statusString = ['待审核','已审核','审核未通过','关闭'];
+
+	//查找登录用户的信息
+	$scope.findLoginOne = function(){
+		sellerService.findLoginOne().success(
+			function(response){
+				$scope.loginOne = response;
+			}
+		)
+	}
+
+	//更新seller商家信息
+	$scope.updateSeller = function(){
+		sellerService.update($scope.loginOne).success(
+			function(response){
+				if(response.success){
+					alert(response.message);
+				}else {
+					alert(response.message);
+				}
+			}
+		)
+	}
 });	

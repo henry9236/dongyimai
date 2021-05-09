@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.dongyimai.result.PageResult;
 import com.dongyimai.result.Result;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -114,5 +115,11 @@ public class SellerController {
 	public PageResult search(@RequestBody TbSeller seller, int page, int rows  ){
 		return sellerService.findPage(seller, page, rows);		
 	}
-	
+
+	@RequestMapping("/findLoginOne")
+	public TbSeller findLoginOne(){
+		//从SecurityContextHolder中获取登陆的姓名
+		String name = SecurityContextHolder.getContext().getAuthentication().getName();
+		return sellerService.findBySellerId(name);
+	}
 }

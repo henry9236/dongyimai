@@ -150,4 +150,14 @@ public class SellerServiceImpl implements SellerService {
 		sellerMapper.updateByPrimaryKeySelective(seller);
 	}
 
+	/**
+	 * 通过sellerId查询
+	 * @param sellerId
+	 * @return
+	 */
+	@Override
+	public TbSeller findBySellerId(String sellerId) {
+		return sellerMapper.selectByPrimaryKey(sellerId);
+	}
+
 }
