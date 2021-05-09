@@ -46,9 +46,9 @@
                             
                             <div class="box-tools pull-right">
                                 <div class="has-feedback">
-							        公司名称：<input  >
-									店铺名称： <input  >									
-									<button class="btn btn-default" >查询</button>                                    
+							        公司名称：<input  ng-model="searchEntity.name" >
+									店铺名称： <input ng-model="searchEntity.nickName" >
+									<button class="btn btn-default" ng-click="reloadList()">查询</button>
                                 </div>
                             </div>
                             <!--工具栏/-->
@@ -57,9 +57,7 @@
 			                  <table id="dataList" class="table table-bordered table-striped table-hover dataTable">
 			                      <thead>
 			                          <tr>
-			                              <th class="" style="padding-right:0px">
-			                                  <input id="selall" type="checkbox" class="icheckbox_square-blue">
-			                              </th> 
+
 										  <th class="sorting_asc">商家ID</th>
 									      <th class="sorting">公司名称</th>
 									      <th class="sorting">店铺名称</th>
@@ -71,7 +69,7 @@
 			                      </thead>
 			                      <tbody>
 			                          <tr ng-repeat="entity in list">
-			                              <td><input  type="checkbox"></td>			                              
+
 				                          <td>{{entity.sellerId}}</td>
 									      <td>{{entity.name}}</td>
 									      <td>{{entity.nickName}}</td>

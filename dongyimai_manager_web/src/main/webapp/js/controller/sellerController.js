@@ -50,7 +50,6 @@ app.controller('sellerController' ,function($scope,$controller   ,sellerService)
 			}		
 		);				
 	}
-	
 	 
 	//批量删除 
 	$scope.dele=function(){			
@@ -88,4 +87,7 @@ app.controller('sellerController' ,function($scope,$controller   ,sellerService)
 			}
 		);
 	}
+
+	$scope.statusString = ['待审核','已审核','审核未通过','关闭'];
+
 });	
