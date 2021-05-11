@@ -182,7 +182,10 @@ public class GoodsServiceImpl implements GoodsService {
 	@Override
 	public void delete(Long[] ids) {
 		for(Long id:ids){
-			goodsMapper.deleteByPrimaryKey(id);
+			TbGoods good = new TbGoods();
+			good.setId(id);
+			good.setIsDelete("1");
+			goodsMapper.updateByPrimaryKeySelective(good);
 		}		
 	}
 	
@@ -209,13 +212,34 @@ public class GoodsServiceImpl implements GoodsService {
 				criteria.andSmallPicLike("%"+goods.getSmallPic()+"%");
 			}			if(goods.getIsEnableSpec()!=null && goods.getIsEnableSpec().length()>0){
 				criteria.andIsEnableSpecLike("%"+goods.getIsEnableSpec()+"%");
-			}			if(goods.getIsDelete()!=null && goods.getIsDelete().length()>0){
-				criteria.andIsDeleteLike("%"+goods.getIsDelete()+"%");
-			}	
+			}	criteria.andIsDeleteIsNull();
 		}
 		
 		Page<TbGoods> page= (Page<TbGoods>)goodsMapper.selectByExample(example);		
 		return new PageResult(page.getTotal(), page.getResult());
 	}
-	
+
+	@Override
+	public void updateStatus(Long[] ids, String status) {
+		for(Long id:ids){
+			//根据商品id获取商品信息
+			TbGoods goods = goodsMapper.selectByPrimaryKey(id);
+			//修改商品状态
+			goods.setAuditStatus(status);
+			//更新商品信息到数据库
+			goodsMapper.updateByPrimaryKey(goods);
+			//修改sku的状态
+			TbItemExample example = new TbItemExample();
+			TbItemExample.Criteria criteria = example.createCriteria();
+			criteria.andGoodsIdEqualTo(id);
+			List<TbItem> itemList = itemMapper.selectByExample(example);
+			//遍历sku集合
+			for(TbItem item:itemList){
+				//修改状态
+				item.setStatus("1");
+				itemMapper.updateByPrimaryKey(item);
+			}
+		}
+	}
+
 }

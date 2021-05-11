@@ -30,11 +30,14 @@ app.service('itemCatService',function($http){
 		return $http.post('../itemCat/search.do?page='+page+"&rows="+rows, searchEntity);
 	}
 
-	//根据parentID查找
+	//分页，根据parentID查找
 	this.findByParentId=function(page,rows,parentId){
 		return $http.get('../itemCat/findByParentId.do?page='+page+'&rows='+rows+'&parentId='+parentId);
 	}
-
+	//根据parentID查找
+	this.findByParentIdNoPage=function(parentId){
+		return $http.get('../itemCat/findByParentIdNoPage.do?parentId='+parentId);
+	}
 	//获取模板列表
 	this.selectList=function(){
 		return $http.get('../typeTemplate/selectList.do');

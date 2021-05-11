@@ -1,5 +1,6 @@
 package com.sellergoods.controller;
 
+import com.alibaba.dubbo.config.annotation.Reference;
 import com.dongyimai.bean.TbItemCat;
 import com.dongyimai.result.PageResult;
 import com.dongyimai.result.Result;
@@ -7,7 +8,6 @@ import com.sellergoods.service.ItemCatService;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import com.alibaba.dubbo.config.annotation.Reference;
 
 import java.util.List;
 
@@ -120,5 +120,10 @@ public class ItemCatController {
 	@RequestMapping("/findByParentId")
 	public PageResult findByParentId( int page, int rows ,long parentId){
 		return itemCatService.findByParentId(page, rows ,parentId);
+	}
+
+	@RequestMapping("/findByParentIdNoPage")
+	public List<TbItemCat> findByParentId(Long parentId){
+		return itemCatService.findByParentId(parentId);
 	}
 }
