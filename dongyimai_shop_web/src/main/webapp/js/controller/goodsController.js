@@ -291,4 +291,19 @@ app.controller('goodsController' ,function($scope,$controller,$location,goodsSer
 		}
 	}
 
+	$scope.marketableC = function(id,marketableStatus){
+		// 商品的上架和下架，只有审核通过的商品才能操作上架下架
+		goodsService.marketable(id,marketableStatus).success(
+			function(response){
+				if(response.success){
+					$scope.reloadList();//刷新列表
+					alert(response.message);
+				}else{
+					alert(response.message);
+				}
+			}
+		);
+	}
+
+
 });	

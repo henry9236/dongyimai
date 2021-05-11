@@ -29,5 +29,8 @@ app.service('goodsService',function($http){
 	this.search=function(page,rows,searchEntity){
 		return $http.post('../goods/search.do?page='+page+"&rows="+rows, searchEntity);
 	}
-
+	//商品的上架和下架
+	this.marketable=function(id,marketableStatus){
+		return $http.get('../goods/marketable.do?id='+id+'&marketableStatus='+marketableStatus);
+	}
 });

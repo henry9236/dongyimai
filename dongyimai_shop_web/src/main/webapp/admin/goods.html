@@ -95,6 +95,15 @@
                                           <td>{{itemCatList[entity.category3Id]}}</td>
                                           <td>
                                               {{status[entity.auditStatus]}}
+                                              <span ng-if="entity.auditStatus == 1">
+                                                    <span ng-if="entity.isMarketable != 1">
+                                                          <a ng-click="marketableC(entity.id,1)" class="btn bg-olive btn-xs">上架</a>
+                                                    </span>
+                                                    <span ng-if="entity.isMarketable == 1">
+                                                          <a ng-click="marketableC(entity.id,0)" class="btn bg-olive btn-xs">下架</a>
+                                                    </span>
+                                              </span>
+
                                           </td>
                                           <td class="text-center">
                                               <a href='goods_edit.html#?id={{entity.id}}' class="btn bg-olive btn-xs">修改</a>
