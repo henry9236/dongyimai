@@ -1,5 +1,5 @@
  //控制层 
-app.controller('goodsController' ,function($scope,$controller,goodsService,uploadService,itemCatService,typeTemplateService){
+app.controller('goodsController' ,function($scope,$controller,$location,goodsService,uploadService,itemCatService,typeTemplateService){
 	
 	$controller('baseController',{$scope:$scope});//继承
 	
@@ -23,35 +23,54 @@ app.controller('goodsController' ,function($scope,$controller,goodsService,uploa
 	}
 	
 	//查询实体 
-	$scope.findOne=function(id){				
+	$scope.findOne=function(){
+		var id= $location.search()['id'];//获取参数值
+		if(id==null){
+			return ;
+		}
 		goodsService.findOne(id).success(
 			function(response){
-				$scope.entity= response;					
+				$scope.entity= response;
+
+				//向富文本编辑器添加商品介绍
+				editor.html($scope.entity.goodsDesc.introduction);
+				//显示图片列表
+				$scope.entity.goodsDesc.itemImages=JSON.parse($scope.entity.goodsDesc.itemImages);
+				//显示扩展属性
+				$scope.entity.goodsDesc.customAttributeItems=  JSON.parse($scope.entity.goodsDesc.customAttributeItems);
+				//规格
+				$scope.entity.goodsDesc.specificationItems=JSON.parse($scope.entity.goodsDesc.specificationItems);
+				//SKU列表规格列转换
+				for( var i=0;i<$scope.entity.itemList.length;i++ ){
+					$scope.entity.itemList[i].spec = JSON.parse( $scope.entity.itemList[i].spec);
+				}
 			}
 		);				
 	}
-	
+
 	//保存 
-	$scope.save=function(){				
-		var serviceObject;//服务层对象  				
-		if($scope.entity.id!=null){//如果有ID
-			serviceObject=goodsService.update( $scope.entity ); //修改  
+	$scope.save=function(){
+		//提取文本编辑器的值
+		$scope.entity.goodsDesc.introduction=editor.html();
+		var serviceObject;//服务层对象
+		if($scope.entity.goods.id!=null){//如果有ID
+			serviceObject=goodsService.update( $scope.entity ); //修改
 		}else{
-			serviceObject=goodsService.add( $scope.entity  );//增加 
-		}				
+			serviceObject=goodsService.add( $scope.entity  );//增加
+		}
 		serviceObject.success(
 			function(response){
 				if(response.success){
-					//重新查询 
-		        	$scope.reloadList();//重新加载
+					location.href="goods.html";//跳转到商品列表页
 				}else{
 					alert(response.message);
 				}
-			}		
-		);				
+			}
+		);
 	}
-	
-	 
+
+
+
 	//批量删除 
 	$scope.dele=function(){			
 		//获取选中的复选框			
@@ -84,6 +103,7 @@ app.controller('goodsController' ,function($scope,$controller,goodsService,uploa
 			function(response){
 				if(response.success){
 					alert('保存成功');
+					$scope.entity={ goodsDesc:{itemImages:[],specificationItems:[]}  };
 					$scope.entity={};
 					editor.html('');//清空富文本编辑器
 				}else{
@@ -173,8 +193,9 @@ app.controller('goodsController' ,function($scope,$controller,goodsService,uploa
 			typeTemplateService.findOne(newValue).success(
 				function(response){
 					$scope.typeTemplateList = JSON.parse(response.brandIds);
-					$scope.entity.goods.brandId = {};
-					$scope.entity.goodsDesc.customAttributeItems = JSON.parse(response.customAttributeItems);
+					if($location.search()['id']==null) {
+						$scope.entity.goodsDesc.customAttributeItems = JSON.parse(response.customAttributeItems);
+					}
 				}
 			)
 			typeTemplateService.findSpecOptionList(newValue).success(
@@ -209,4 +230,65 @@ app.controller('goodsController' ,function($scope,$controller,goodsService,uploa
 			}
 		}
 	}
+
+	//[{spec:{多个规格1:规格选项1},price:0,num:9999,status:'0',isDefault:'0' }，{......} ];
+	//将specification数组中的，attributeValue每个数据，与specification数组中其他元素的，attributeValue数组的每个数据组合起来，放到itemList中，每个组合存为一个对象
+	$scope.createItemList = function(){
+		//取选的时候也会对itemList数组中的所有数据进行遍历添加，会导致数据无法删除,需要每次响应checkbox事件时对itemList做个清空的初始化
+		$scope.entity.itemList=[{spec:{},price:0,num:9999,status:'0',isDefault:'0' } ];//初始化itemList
+		//遍历specification数组
+		for (i=0;i<$scope.entity.goodsDesc.specificationItems.length;++i){
+			//创建tempItemList用于保存对itemList数据的修改，最后用于替换itemList中的数据
+			var tempItemList = [];
+			//遍历itemList数组，每次都对itemList中的所有数据进行操作
+			for(j=0;j<$scope.entity.itemList.length;++j){
+				//保存，itemList数组下标为j的数据,做深克隆用
+				var oldrow = $scope.entity.itemList[j];
+				//循环specification下标为I的attributeValue数组的数据
+				for(k=0;k<$scope.entity.goodsDesc.specificationItems[i].attributeValue.length;++k){
+					//做深克隆，(深克隆，根据原有对象，创建一个独立于原有对象的拷贝)
+					var newrow = JSON.parse( JSON.stringify( oldrow )  );//深克隆
+					//$scope.entity.goodsDesc.specificationItems[i].attributeName中的名称，
+					//将attributeValue数组中k下标的数据保存到，深克隆出来的对象中的spec对象中的名称为 specificationItems的i下标的attributeName的字段
+					newrow.spec[$scope.entity.goodsDesc.specificationItems[i].attributeName] = $scope.entity.goodsDesc.specificationItems[i].attributeValue[k];
+					//将数据保存到tempItemList数组中
+					tempItemList.push(newrow);
+				}
+			}
+			//用tempItemLsit数组中的数据替换itemList的数据
+			$scope.entity.itemList = tempItemList;
+		}
+	}
+
+	//初始化一个状态值的集合  0 未审核  1 审核通过 2 驳回  3 关闭
+	$scope.status = ['未审核', '审核通过', '驳回', '关闭'];
+
+	//商品分类类表
+	$scope.itemCatList = [];
+	//加载商品分类列表
+	$scope.findItemCatList=function(){
+		itemCatService.findAll().success(
+			function(response){
+				for(i=0;i<response.length;++i){
+					$scope.itemCatList[response[i].id] = response[i].name;
+				}
+			}
+		)
+	}
+
+	//根据规格名称和选项名称返回是否被勾选
+	$scope.checkAttributeValue=function(specName,optionName){
+		var items= $scope.entity.goodsDesc.specificationItems;
+		var object= $scope.searchObjectByKey(items,'attributeName',specName);
+		if(object==null){
+			return false;
+		}else{
+			if(object.attributeValue.indexOf(optionName)>=0){
+				return true;
+			}else{
+				return false;
+			}
+		}
+	}
+
 });	

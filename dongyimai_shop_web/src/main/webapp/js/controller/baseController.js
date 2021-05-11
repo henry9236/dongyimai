@@ -81,4 +81,14 @@ app.controller('baseController',function ($scope){
         }
         return null;
     }
+
+    //查询JSON集合中是否有对象
+    $scope.searchObjectByKey = function(list,key,value){
+        for(var i=0;i<list.length;i++){
+            if(list[i][key]==value){
+                return list[i];
+            }
+        }
+        return null;
+    }
 })
