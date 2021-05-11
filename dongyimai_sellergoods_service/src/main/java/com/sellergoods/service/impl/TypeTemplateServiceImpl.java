@@ -18,6 +18,7 @@ import com.dongyimai.bean.TbTypeTemplateExample.Criteria;
 import com.sellergoods.service.TypeTemplateService;
 
 import com.dongyimai.result.PageResult;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * 服务实现层
@@ -25,6 +26,7 @@ import com.dongyimai.result.PageResult;
  *
  */
 @Service
+@Transactional
 public class TypeTemplateServiceImpl implements TypeTemplateService {
 
 	@Autowired

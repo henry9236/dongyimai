@@ -17,6 +17,7 @@ import com.dongyimai.bean.TbSpecificationExample.Criteria;
 import com.sellergoods.service.SpecificationService;
 
 import com.dongyimai.result.PageResult;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * 服务实现层
@@ -24,6 +25,7 @@ import com.dongyimai.result.PageResult;
  *
  */
 @Service
+@Transactional
 public class SpecificationServiceImpl implements SpecificationService {
 
 	@Autowired

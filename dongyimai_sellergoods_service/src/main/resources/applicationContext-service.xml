@@ -16,4 +16,6 @@
 
     <!--载入Dao中有关mybatis数据访问的spring配置-->
     <import resource="applicationContext-dao.xml"/>
+    <!--加载有关事务的配置文件-->
+    <import resource="applicationContext-tx.xml"/>
 </beans>
