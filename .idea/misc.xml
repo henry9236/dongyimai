@@ -2,7 +2,9 @@
 <project version="4">
   <component name="ExternalStorageConfigurationManager" enabled="true" />
   <component name="FrameworkDetectionExcludesConfiguration">
+    <file type="web" url="file://$PROJECT_DIR$/dongyimai_content_service" />
     <file type="web" url="file://$PROJECT_DIR$/dongyimai_manager_web" />
+    <file type="web" url="file://$PROJECT_DIR$/dongyimai_portal_web" />
     <file type="web" url="file://$PROJECT_DIR$/dongyimai_sellergoods_service" />
     <file type="web" url="file://$PROJECT_DIR$/dongyimai_shop_web" />
   </component>

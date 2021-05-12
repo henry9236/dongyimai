@@ -297,7 +297,6 @@ app.controller('goodsController' ,function($scope,$controller,$location,goodsSer
 			function(response){
 				if(response.success){
 					$scope.reloadList();//刷新列表
-					alert(response.message);
 				}else{
 					alert(response.message);
 				}

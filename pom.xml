@@ -15,6 +15,9 @@
         <module>dongyimai_sellergoods_service</module>
         <module>dongyimai_manager_web</module>
         <module>dongyimai_shop_web</module>
+        <module>dongyimai_content_interface</module>
+        <module>dongyimai_content_service</module>
+        <module>dongyimai_portal_web</module>
     </modules>
     <packaging>pom</packaging>
 
