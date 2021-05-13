@@ -18,6 +18,10 @@
         <module>dongyimai_content_interface</module>
         <module>dongyimai_content_service</module>
         <module>dongyimai_portal_web</module>
+        <module>dongyimai_solr_util</module>
+        <module>dongyimai_search_interface</module>
+        <module>dongyimai_search_service</module>
+        <module>dongyimai_search_web</module>
     </modules>
     <packaging>pom</packaging>
 

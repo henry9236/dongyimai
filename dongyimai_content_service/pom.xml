@@ -103,7 +103,6 @@
             <artifactId>dongyimai_content_interface</artifactId>
             <version>1.0</version>
         </dependency>
-
     </dependencies>
 
     <build>

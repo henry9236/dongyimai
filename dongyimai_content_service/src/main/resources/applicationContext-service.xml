@@ -17,4 +17,5 @@
 
     <import resource="applicationContext-dao.xml"></import>
     <import resource="applicationContext-tx.xml"></import>
+    <import resource="applicationContext-redis.xml"></import>
 </beans>

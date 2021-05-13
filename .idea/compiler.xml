@@ -7,15 +7,19 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="dongyimai_shop_web" />
-        <module name="dongyimai_content_service" />
-        <module name="dongyimai_portal_web" />
+        <module name="dongyimai_search_service" />
         <module name="dongyimai_dao" />
         <module name="dongyimai_manager_web" />
+        <module name="dongyimai_search_interface" />
         <module name="dongyimai_content_interface" />
-        <module name="dongyimai_sellergoods_service" />
         <module name="dongyimai_common" />
         <module name="dongyimai_sellergoods_interface" />
+        <module name="dongyimai_solr_util" />
         <module name="dongyimai_pojo" />
+        <module name="dongyimai_search_web" />
+        <module name="dongyimai_content_service" />
+        <module name="dongyimai_portal_web" />
+        <module name="dongyimai_sellergoods_service" />
       </profile>
     </annotationProcessing>
   </component>
