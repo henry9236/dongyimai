@@ -31,6 +31,7 @@
     <dubbo:application name="dongyimai-manager-web"/>
     <duboo:registry address="zookeeper://192.168.188.128:2181"/>
     <dubbo:annotation package="com.sellergoods.controller"/>
+    <dubbo:consumer timeout="30000" />
 
 
     <!-- 配置多媒体解析器 -->

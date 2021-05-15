@@ -34,7 +34,7 @@
     <dubbo:application name="dongyimai_shop_web"/>
     <dubbo:registry address="zookeeper://192.168.188.128:2181"/>
     <dubbo:annotation package="com.dongyimai"/>
-    <dubbo:consumer timeout="3000" />
+    <dubbo:consumer timeout="30000" />
 
     <!-- 定义文件上传解析器 -->
     <bean id="multipartResolver"

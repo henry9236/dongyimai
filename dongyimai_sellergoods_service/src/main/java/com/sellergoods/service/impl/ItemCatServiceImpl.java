@@ -1,6 +1,7 @@
 package com.sellergoods.service.impl;
 import java.util.List;
 
+import com.alibaba.dubbo.config.annotation.Reference;
 import com.dongyimai.bean.TbBrand;
 import com.dongyimai.bean.TbItemCat;
 import com.dongyimai.bean.TbItemCatExample;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -24,7 +26,8 @@ public class ItemCatServiceImpl implements ItemCatService {
 
 	@Autowired
 	private TbItemCatMapper itemCatMapper;
-	
+	@Autowired
+	private RedisTemplate redisTemplate;
 	/**
 	 * 查询全部
 	 */
@@ -111,6 +114,7 @@ public class ItemCatServiceImpl implements ItemCatService {
 		TbItemCatExample.Criteria tbItemCatExample_criteria = tbItemCatExample.createCriteria();
 		tbItemCatExample_criteria.andParentIdEqualTo(parentId);
 		Page<TbItemCat> page = (Page<TbItemCat>)itemCatMapper.selectByExample(tbItemCatExample);
+		saveToRedis();//存入数据到缓存
 		return new PageResult(page.getTotal(),page.getResult());
 	}
 
@@ -119,7 +123,14 @@ public class ItemCatServiceImpl implements ItemCatService {
 		TbItemCatExample tbItemCatExample=new TbItemCatExample();
 		TbItemCatExample.Criteria tbItemCatExample_criteria = tbItemCatExample.createCriteria();
 		tbItemCatExample_criteria.andParentIdEqualTo(parentId);
-		List<TbItemCat> itemCatList = itemCatMapper.selectByExample(tbItemCatExample);
-		return itemCatList;
+		saveToRedis();//存入数据到缓存
+		return itemCatMapper.selectByExample(tbItemCatExample);
+	}
+	private void saveToRedis(){
+		//把所有itemCat保存到Redis里面去
+		List<TbItemCat> list = findAll();
+		for(TbItemCat itemCat:list){
+			redisTemplate.boundHashOps("itemCat").put(itemCat.getName(), itemCat.getTypeId());
+		}
 	}
 }

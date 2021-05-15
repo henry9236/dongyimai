@@ -43,6 +43,10 @@
             <artifactId>dongyimai_pojo</artifactId>
             <version>1.0</version>
         </dependency>
-
+        <dependency>
+            <groupId>offcn</groupId>
+            <artifactId>dongyimai_common</artifactId>
+            <version>1.0</version>
+        </dependency>
     </dependencies>
 </project>

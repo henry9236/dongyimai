@@ -18,6 +18,7 @@ import com.dongyimai.bean.TbTypeTemplateExample.Criteria;
 import com.sellergoods.service.TypeTemplateService;
 
 import com.dongyimai.result.PageResult;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -29,6 +30,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class TypeTemplateServiceImpl implements TypeTemplateService {
 
+	@Autowired
+	private RedisTemplate redisTemplate;
 	@Autowired
 	private TbTypeTemplateMapper typeTemplateMapper;
 	@Autowired
@@ -48,6 +51,7 @@ public class TypeTemplateServiceImpl implements TypeTemplateService {
 	public PageResult findPage(int pageNum, int pageSize) {
 		PageHelper.startPage(pageNum, pageSize);		
 		Page<TbTypeTemplate> page=   (Page<TbTypeTemplate>) typeTemplateMapper.selectByExample(null);
+		saveToRedis();//存入数据到缓存
 		return new PageResult(page.getTotal(), page.getResult());
 	}
 
@@ -107,8 +111,9 @@ public class TypeTemplateServiceImpl implements TypeTemplateService {
 				criteria.andCustomAttributeItemsLike("%"+typeTemplate.getCustomAttributeItems()+"%");
 			}	
 		}
-		
-		Page<TbTypeTemplate> page= (Page<TbTypeTemplate>)typeTemplateMapper.selectByExample(example);		
+		Page<TbTypeTemplate> page= (Page<TbTypeTemplate>)typeTemplateMapper.selectByExample(example);
+
+		saveToRedis();//存入数据到缓存
 		return new PageResult(page.getTotal(), page.getResult());
 	}
 
@@ -121,9 +126,12 @@ public class TypeTemplateServiceImpl implements TypeTemplateService {
 	public List<Map> findSpecOptionList(Long id) {
 		//1，通过id获取typeTemplate对象
 		TbTypeTemplate tbTypeTemplate = typeTemplateMapper.selectByPrimaryKey(id);
+
 		//2，获取typeTemplate对象下的specId，规格数据
 			//2.1将规格数据JSON字符串，转换成List<Map>
 		List<Map> specificationlist = JSON.parseArray(tbTypeTemplate.getSpecIds(),Map.class);
+		//如果specid==null 则直接返回null
+		if(null==specificationlist){return null;}
 		//3，通过规格id获取规格选项
 		for(Map map:specificationlist){
 			//{id:?,text:?,options:[]}
@@ -138,5 +146,20 @@ public class TypeTemplateServiceImpl implements TypeTemplateService {
 		return specificationlist;
 	}
 
-
+	/**
+	 * 将数据存入缓存
+	 */
+	private void saveToRedis(){
+		//获取模板数据
+		List<TbTypeTemplate> typeTemplateList = findAll();
+		//循环模板
+		for(TbTypeTemplate typeTemplate:typeTemplateList){
+			//存储品牌列表
+			List<Map> brandList = JSON.parseArray(typeTemplate.getBrandIds(),Map.class);
+			redisTemplate.boundHashOps("brandList").put(typeTemplate.getId(),brandList);
+			//存储规格列表
+			List<Map> specList = findSpecOptionList(typeTemplate.getId());//根据模板ID查询规格列表、包括规格选项
+			redisTemplate.boundHashOps("specList").put(typeTemplate.getId(),specList);
+		}
+	}
 }

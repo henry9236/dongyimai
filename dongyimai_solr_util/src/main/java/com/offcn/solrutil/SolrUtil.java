@@ -23,6 +23,7 @@ public class SolrUtil {
     private TbItemMapper tbItemMapper;
     @Autowired
     private SolrTemplate solrTemplate;
+    //导入商品
     public void importItems(){
         TbItemExample tbItemExample = new TbItemExample();
         TbItemExample.Criteria tbItemCatExample_criteria = tbItemExample.createCriteria();
@@ -42,6 +43,12 @@ public class SolrUtil {
         solrTemplate.commit();
         System.out.println("===结束===");
     }
+
+    public void importItemCat(){
+
+    }
+
+
    public static void main(String[] args){
         ApplicationContext context = new ClassPathXmlApplicationContext("classpath*:applicationContext-*.xml");
         SolrUtil solrUtil = (SolrUtil) context.getBean("solrUtil");
