@@ -2,6 +2,7 @@ package com.offcn.search.service.impl;
 
 import com.alibaba.dubbo.config.annotation.Service;
 import com.dongyimai.bean.TbItem;
+import com.github.promeg.pinyinhelper.Pinyin;
 import com.offcn.search.service.ItemSearchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -35,11 +36,22 @@ public class ItemSearchServiceImpl implements ItemSearchService {
         //1，按关键字查询（高亮显示），item
         map.putAll(searchList(searchMap));
         //2，根据关键字查询商品分类，item_category
+        //对solr搜索的结果根据category做个group by 返回分类列表数据，因为分类与规格无关，所以不用做过滤
         List categoryList = searchCategoryList(searchMap);
         map.put("categoryList",categoryList);
-        //3,查询品牌和规格列表
-        if(categoryList.size()>0){
-            map.putAll(searchBrandAndSpecList((String)categoryList.get(0)));
+
+        //3,查询品牌和规格列表，根据
+        String categoryName = (String) searchMap.get("category");
+        //判断，如果searchMap传进来的category有值
+        if(!"".equals(categoryName)){
+            //如果有值，通过分类名称，重新读取对象品牌，规格
+            map.putAll(searchBrandAndSpecList(categoryName));
+        }else{//不然，如果没有传来 category的值
+            //判断返回页面的分类列表不为空
+            if(categoryList.size()>0){
+                //获取分类列表第一个，分类的规格选项值并返回给页面
+                map.putAll(searchBrandAndSpecList((String)categoryList.get(0)));
+            }
         }
         return map;
     }
@@ -49,6 +61,28 @@ public class ItemSearchServiceImpl implements ItemSearchService {
         Map map = new HashMap();
         //1，创建一个支持高亮的查询器对象
         SimpleHighlightQuery query = new SimpleHighlightQuery();
+        //添加筛选
+        //添加分类筛选
+        if (!"".equals(searchMap.get("category"))) {
+            Criteria filterCriteria = new Criteria("item_category").is(searchMap.get("category"));
+            FilterQuery filterQuery = new SimpleFilterQuery(filterCriteria);
+            query.addFilterQuery(filterQuery);
+        }
+        //添加品牌筛选
+        if(!"".equals(searchMap.get("brand"))){
+            Criteria filterCriteria=new Criteria("item_brand").is(searchMap.get("brand"));
+            FilterQuery filterQuery = new SimpleFilterQuery(filterCriteria);
+            query.addFilterQuery(filterQuery);
+        }
+        //添加过滤规格
+        if(searchMap.get("spec")!=null){
+            Map<String,String> specMap = (Map<String, String>) searchMap.get("spec");
+            for(String key : specMap.keySet()){
+                Criteria filterCriteria=new Criteria("item_spec_"+Pinyin.toPinyin(key, "").toLowerCase()).is( specMap.get(key) );
+                FilterQuery filterQuery = new SimpleFilterQuery(filterCriteria);
+                query.addFilterQuery(filterQuery);
+            }
+        }
         //2。设定需要高亮处理字段
         HighlightOptions highlightOptions = new HighlightOptions();
         highlightOptions.addField("item_title");
