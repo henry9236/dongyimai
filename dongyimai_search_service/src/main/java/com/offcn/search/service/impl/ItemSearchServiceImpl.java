@@ -6,10 +6,12 @@ import com.github.promeg.pinyinhelper.Pinyin;
 import com.offcn.search.service.ItemSearchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.solr.core.SolrTemplate;
 import org.springframework.data.solr.core.query.*;
 import org.springframework.data.solr.core.query.result.*;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,7 +34,8 @@ public class ItemSearchServiceImpl implements ItemSearchService {
 //        query.addCriteria(criteria);
 //        ScoredPage<TbItem> page = solrTemplate.queryForPage(query, TbItem.class);
 //        map.put("rows", page.getContent());
-
+        String keywords = (String) searchMap.get("keywords");
+        searchMap.put("keywords",keywords.replace(" ",""));
         //1，按关键字查询（高亮显示），item
         map.putAll(searchList(searchMap));
         //2，根据关键字查询商品分类，item_category
@@ -40,7 +43,7 @@ public class ItemSearchServiceImpl implements ItemSearchService {
         List categoryList = searchCategoryList(searchMap);
         map.put("categoryList",categoryList);
 
-        //3,查询品牌和规格列表，根据
+        //3,查询品牌和规格列表，根据categoryList
         String categoryName = (String) searchMap.get("category");
         //判断，如果searchMap传进来的category有值
         if(!"".equals(categoryName)){
@@ -53,6 +56,7 @@ public class ItemSearchServiceImpl implements ItemSearchService {
                 map.putAll(searchBrandAndSpecList((String)categoryList.get(0)));
             }
         }
+
         return map;
     }
 
@@ -83,6 +87,43 @@ public class ItemSearchServiceImpl implements ItemSearchService {
                 query.addFilterQuery(filterQuery);
             }
         }
+        //按价格筛选
+        Map<String,Integer> price = (Map<String,Integer>) searchMap.get("price");
+        if(!CollectionUtils.isEmpty(price)){
+            //如果区间起点不等于0
+            if(price.get("low") != 0){
+                Criteria filterCriteria = new Criteria("item_price").greaterThanEqual(price.get("low"));
+                FilterQuery filterQuery = new SimpleFilterQuery(filterCriteria);
+                query.addFilterQuery(filterQuery);
+            }
+            //如果高价限制不等于null
+            if(price.get("height") != null){
+                Criteria filterCriteria = new Criteria("item_price").lessThanEqual(price.get("height"));
+                FilterQuery filterQuery = new SimpleFilterQuery(filterCriteria);
+                query.addFilterQuery(filterQuery);
+            }
+        }
+        //分页查询
+        Integer pageNo = (Integer) searchMap.get("pageNo");
+        if(pageNo == null){pageNo=1;}//默认第一页
+        Integer pageSize = (Integer) searchMap.get("pageSize");
+        if(pageSize==null){pageSize=20;}//默认20
+        query.setOffset((pageNo-1)*pageSize); //从第几条记录查询
+        query.setRows(pageSize);
+        //排序
+        String sortValue = (String) searchMap.get("sort");
+        String sortField = (String) searchMap.get("sortField");
+        if(sortValue!=null && !sortValue.isEmpty()){
+            if(sortValue.equals("ASC")){
+                Sort sort = new Sort(Sort.Direction.ASC,"item_"+sortField);
+                query.addSort(sort);
+            }
+            if(sortValue.equals("DESC")){
+                Sort sort = new Sort(Sort.Direction.DESC,"item_"+sortField);
+                query.addSort(sort);
+            }
+        }
+
         //2。设定需要高亮处理字段
         HighlightOptions highlightOptions = new HighlightOptions();
         highlightOptions.addField("item_title");
@@ -115,6 +156,8 @@ public class ItemSearchServiceImpl implements ItemSearchService {
         }
         //把带高亮数据集合存放map
         map.put("rows",page.getContent());
+        map.put("totalPages", page.getTotalPages());//返回总页数
+        map.put("total", page.getTotalElements());//返回总记录数
         return map;
     }
 

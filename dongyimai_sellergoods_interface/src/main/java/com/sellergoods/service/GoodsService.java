@@ -1,5 +1,6 @@
 package com.sellergoods.service;
 import com.dongyimai.bean.TbGoods;
+import com.dongyimai.bean.TbItem;
 import com.dongyimai.group.Goods;
 import com.dongyimai.result.PageResult;
 
@@ -70,4 +71,12 @@ public interface GoodsService {
 
 	//改变商品上架下架状态
 	public void marketableStatusChange(long id,long marketableStatus);
+
+	/**
+	 *
+	 * @param goodsId
+	 * @param status
+	 * @return
+	 */
+	public List<TbItem> findTtemListByGoodsIdandStatus(Long[] goodsId,String status);
 }
