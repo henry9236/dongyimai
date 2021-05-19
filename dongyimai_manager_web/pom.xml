@@ -103,7 +103,7 @@
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-config</artifactId>
         </dependency>
-
+    <!--dongyimai-->
     <dependency>
         <groupId>offcn</groupId>
         <artifactId>dongyimai_common</artifactId>
@@ -117,6 +117,16 @@
         <dependency>
             <groupId>offcn</groupId>
             <artifactId>dongyimai_content_interface</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>offcn</groupId>
+            <artifactId>dongyimai_search_interface</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>offcn</groupId>
+            <artifactId>dongyimai_page_interface</artifactId>
             <version>1.0</version>
         </dependency>
 </dependencies>

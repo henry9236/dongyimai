@@ -1,4 +1,5 @@
 package com.sellergoods.service.impl;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -188,7 +189,13 @@ public class GoodsServiceImpl implements GoodsService {
 			good.setId(id);
 			good.setIsDelete("1");
 			goodsMapper.updateByPrimaryKeySelective(good);
-		}		
+		}
+		//把delete状态为1 ，的item，设置为为审核
+		List<TbItem> listitem = findItemListByGoodsIdandStatus(ids,"1");
+		for(TbItem tbItem:listitem){
+			tbItem.setStatus("0");
+			itemMapper.updateByPrimaryKey(tbItem);
+		}
 	}
 	
 	
@@ -250,6 +257,21 @@ public class GoodsServiceImpl implements GoodsService {
 		good.setId(id);
 		good.setIsMarketable(String.valueOf(marketableStatus));
 		goodsMapper.updateByPrimaryKeySelective(good);
+	}
+
+	/**
+	 *  根据商品ID和状态查询Item表信息
+	 * @param goodsIds
+	 * @param status
+	 * @return
+	 */
+	@Override
+	public List<TbItem> findItemListByGoodsIdandStatus(Long[] goodsIds, String status) {
+		TbItemExample example = new TbItemExample();
+		TbItemExample.Criteria criteria = example.createCriteria();
+		criteria.andGoodsIdIn(Arrays.asList(goodsIds));
+		criteria.andStatusEqualTo(status);
+		return itemMapper.selectByExample(example);
 	}
 
 }

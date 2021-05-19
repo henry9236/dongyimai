@@ -73,10 +73,11 @@ public interface GoodsService {
 	public void marketableStatusChange(long id,long marketableStatus);
 
 	/**
-	 *
-	 * @param goodsId
+	 * 根据商品ID和状态查询Item表信息
+	 * @param goodsIds
 	 * @param status
 	 * @return
 	 */
-	public List<TbItem> findTtemListByGoodsIdandStatus(Long[] goodsId,String status);
+	public List<TbItem> findItemListByGoodsIdandStatus(Long[] goodsIds, String status );
+
 }

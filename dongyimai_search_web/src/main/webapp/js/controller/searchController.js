@@ -109,6 +109,7 @@ app.controller('searchController',function($scope,$location,searchService){
         //把排序规则，交给过滤条件，交给后端
         $scope.searchMap.sortField=sortField;
         $scope.searchMap.sort=sort;
+        $scope.searchMap.pageNo = 1;
         $scope.search();
     }
     //判断关键字是不是品牌，同过遍历barnList中的元素

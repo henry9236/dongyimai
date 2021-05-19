@@ -19,7 +19,10 @@
         <module name="dongyimai_search_web" />
         <module name="dongyimai_content_service" />
         <module name="dongyimai_portal_web" />
+        <module name="dongyimai_page_interface" />
+        <module name="dongyimai_page_web" />
         <module name="dongyimai_sellergoods_service" />
+        <module name="dongyimai_page_service" />
       </profile>
     </annotationProcessing>
   </component>

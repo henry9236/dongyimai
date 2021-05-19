@@ -1,6 +1,7 @@
 package com.offcn.search.service.impl;
 
 import com.alibaba.dubbo.config.annotation.Service;
+import com.alibaba.fastjson.JSON;
 import com.dongyimai.bean.TbItem;
 import com.github.promeg.pinyinhelper.Pinyin;
 import com.offcn.search.service.ItemSearchService;
@@ -35,6 +36,9 @@ public class ItemSearchServiceImpl implements ItemSearchService {
 //        ScoredPage<TbItem> page = solrTemplate.queryForPage(query, TbItem.class);
 //        map.put("rows", page.getContent());
         String keywords = (String) searchMap.get("keywords");
+        if(null==keywords){
+            return map;
+        }
         searchMap.put("keywords",keywords.replace(" ",""));
         //1，按关键字查询（高亮显示），item
         map.putAll(searchList(searchMap));
@@ -58,6 +62,42 @@ public class ItemSearchServiceImpl implements ItemSearchService {
         }
 
         return map;
+    }
+
+    /**
+     * 将item的数据导入到solr中
+     *
+     * @param list
+     */
+    @Override
+    public void imporItemtList(List<TbItem> list) {
+        for(TbItem item:list){
+            System.out.println(item.getTitle());
+            Map<String,String> specMap = JSON.parseObject(item.getSpec(),Map.class);
+            Map map = new HashMap();
+            for(String key : specMap.keySet()){
+                //把规格key转成拼音，和value一起放到map中
+                map.put("item_spec_"+Pinyin.toPinyin(key,"").toLowerCase(),specMap.get(key));
+            }
+            item.setSpecMap(map);	//给带动态域注解的字段赋值
+        }
+        solrTemplate.saveBeans(list);
+        solrTemplate.commit();
+    }
+
+    /**
+     * 从solr中删除数据
+     *
+     * @param goodsIdList
+     */
+    @Override
+    public void deleteByGoodsIds(List goodsIdList) {
+        System.out.println("删除商品ID"+goodsIdList);
+        Query query = new SimpleQuery();
+        Criteria  criteria = new Criteria("item_goodsid").in(goodsIdList);
+        query.addCriteria(criteria);
+        solrTemplate.delete(query);
+        solrTemplate.commit();
     }
 
     //根据关键字查询，对查询的结果进行高亮
