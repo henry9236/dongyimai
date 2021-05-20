@@ -1,19 +1,26 @@
 package com.sellergoods.controller;
 
 import com.alibaba.dubbo.config.annotation.Reference;
+import com.alibaba.fastjson.JSON;
 import com.dongyimai.bean.TbGoods;
 import com.dongyimai.bean.TbItem;
 import com.dongyimai.group.Goods;
 import com.dongyimai.result.PageResult;
 import com.dongyimai.result.Result;
-import com.offcn.search.service.ItemSearchService;
 import com.page.service.ItemPageService;
 import com.sellergoods.service.GoodsService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jms.core.JmsTemplate;
+import org.springframework.jms.core.MessageCreator;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.jms.Destination;
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.Session;
 import java.util.Arrays;
 import java.util.List;
 
@@ -28,10 +35,14 @@ public class GoodsController {
 
 	@Reference
 	private GoodsService goodsService;
-	@Reference
-	private ItemSearchService itemSearchService;
 	@Reference(timeout=30000)
 	private ItemPageService itemPageService;
+
+	//用于发送solr导入的消息
+	@Autowired
+	private Destination queueSolrDestination;
+	@Autowired
+	private JmsTemplate jmsTemplate;
 	/**
 	 * 返回全部列表
 	 * @return
@@ -115,7 +126,8 @@ public class GoodsController {
 	public Result delete(Long [] ids){
 		try {
 			goodsService.delete(ids);
-			itemSearchService.deleteByGoodsIds(Arrays.asList(ids));
+			//TODO 把要删除的数据的id发送到消息队列
+		//	itemSearchService.deleteByGoodsIds(Arrays.asList(ids));
 			return new Result(true, "删除成功"); 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -142,16 +154,20 @@ public class GoodsController {
 			if("1".equals(status)){
 				//找所有修改的，goodsid在ids中的item数据
 				List<TbItem> itemList =	goodsService.findItemListByGoodsIdandStatus(ids,status);
-				//调用搜索接口实现数据批量导入
-				if(itemList.size()>0){
-					itemSearchService.imporItemtList(itemList);
-				}else{
-					System.out.println("没有明细数据");
-				}
-				//静态页生成
-				for(Long goodsId:ids){
-					itemPageService.generateItemHtml(goodsId);
-				}
+				//更新solr里面的数据，通过传进来更新的id 数组 ids
+				String jsonString = JSON.toJSONString(itemList);
+				jmsTemplate.send(queueSolrDestination, new MessageCreator() {
+					@Override
+					public Message createMessage(Session session) throws JMSException {
+						//把前面转成JSON字符串的要在solr里更新的数据发送到消息队列中去，再由消息消费方更新solr里面的数据
+						return session.createTextMessage(jsonString);
+					}
+				});
+				//TODO 解耦
+//				//静态页生成
+//				for(Long goodsId:ids){
+//					itemPageService.generateItemHtml(goodsId);
+//				}
 			}
 			return new Result(true,"成功");
 		}catch(Exception e){

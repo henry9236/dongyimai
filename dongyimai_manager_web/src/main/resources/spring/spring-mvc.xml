@@ -44,4 +44,5 @@
     <context:property-placeholder location="classpath:applicatioin.properties"/>
     <!--导入spring-security的配置文件-->
     <import resource="spring-security.xml"/>
+    <import resource="spring-activemq.xml"/>
 </beans>
