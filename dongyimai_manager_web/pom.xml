@@ -119,18 +119,6 @@
             <artifactId>dongyimai_content_interface</artifactId>
             <version>1.0</version>
         </dependency>
-        <dependency>
-            <groupId>offcn</groupId>
-            <artifactId>dongyimai_page_interface</artifactId>
-            <version>1.0</version>
-        </dependency>
-
-<!--        <dependency>-->
-<!--            <groupId>offcn</groupId>-->
-<!--            <artifactId>dongyimai_search_interface</artifactId>-->
-<!--            <version>1.0</version>-->
-<!--        </dependency>-->
-
         <!--消息中间件-->
         <dependency>
             <groupId>org.springframework</groupId>

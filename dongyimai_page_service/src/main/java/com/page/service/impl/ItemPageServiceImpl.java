@@ -1,6 +1,5 @@
 package com.page.service.impl;
 
-import com.alibaba.dubbo.config.annotation.Service;
 import com.dongyimai.bean.TbGoods;
 import com.dongyimai.bean.TbGoodsDesc;
 import com.dongyimai.bean.TbItem;
@@ -15,8 +14,10 @@ import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfig;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
@@ -82,6 +83,25 @@ public class ItemPageServiceImpl implements ItemPageService {
             out.close();
             return true;
         }catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * 删除商品静态化网页文件
+     *
+     * @param goodsIds
+     * @return
+     */
+    @Override
+    public boolean deleteItemHtml(Long[] goodsIds) {
+        try{
+            for (Long goodsId : goodsIds){
+                new File(pagedir + goodsId + ".html").delete();
+            }
+           return true;
+        }catch (Exception e){
             e.printStackTrace();
             return false;
         }

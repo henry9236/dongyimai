@@ -9,4 +9,11 @@ public interface ItemPageService {
      * @return
      */
     public boolean generateItemHtml(Long goodsId) ;
+    /**
+     * 删除商品静态化网页文件
+     * @param goodsIds
+     * @return
+     */
+    public boolean deleteItemHtml(Long[] goodsIds);
+
 }

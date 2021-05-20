@@ -7,7 +7,7 @@ import com.dongyimai.bean.TbItem;
 import com.dongyimai.group.Goods;
 import com.dongyimai.result.PageResult;
 import com.dongyimai.result.Result;
-import com.page.service.ItemPageService;
+
 import com.sellergoods.service.GoodsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
@@ -35,12 +35,18 @@ public class GoodsController {
 
 	@Reference
 	private GoodsService goodsService;
-	@Reference(timeout=30000)
-	private ItemPageService itemPageService;
-
 	//用于发送solr导入的消息
 	@Autowired
 	private Destination queueSolrDestination;
+	//用户在索引库中删除记录
+	@Autowired
+	private Destination queueSolrDeleteDestination;
+	//网页静态化消息
+	@Autowired
+	private Destination topicPageDestination;
+	//用于删除静态网页的消息
+	@Autowired
+	private Destination topicPageDeleteDestination;
 	@Autowired
 	private JmsTemplate jmsTemplate;
 	/**
@@ -126,8 +132,21 @@ public class GoodsController {
 	public Result delete(Long [] ids){
 		try {
 			goodsService.delete(ids);
-			//TODO 把要删除的数据的id发送到消息队列
-		//	itemSearchService.deleteByGoodsIds(Arrays.asList(ids));
+			//把要删除的数据的id发送到消息队列，删除solr里面的数据
+			jmsTemplate.send(queueSolrDeleteDestination, new MessageCreator() {
+				@Override
+				public Message createMessage(Session session) throws JMSException {
+					return session.createObjectMessage(ids);
+				}
+			});
+			//删除静态化的页面
+			jmsTemplate.send(topicPageDeleteDestination, new MessageCreator() {
+				@Override
+				public Message createMessage(Session session) throws JMSException {
+					return session.createObjectMessage(ids);
+				}
+			});
+
 			return new Result(true, "删除成功"); 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -135,7 +154,7 @@ public class GoodsController {
 		}
 	}
 	
-		/**
+	/**
 	 * 查询+分页
 	 * @param page
 	 * @param rows
@@ -163,11 +182,15 @@ public class GoodsController {
 						return session.createTextMessage(jsonString);
 					}
 				});
-				//TODO 解耦
-//				//静态页生成
-//				for(Long goodsId:ids){
-//					itemPageService.generateItemHtml(goodsId);
-//				}
+				//静态页生成解耦
+				for(Long goodsId:ids){
+					jmsTemplate.send(topicPageDestination, new MessageCreator() {
+						@Override
+						public Message createMessage(Session session) throws JMSException {
+							return session.createTextMessage(goodsId.toString());
+						}
+					});
+				}
 			}
 			return new Result(true,"成功");
 		}catch(Exception e){
@@ -182,6 +205,11 @@ public class GoodsController {
 	 */
 	@RequestMapping("/genHtml")
 	public void generateHtml(Long goodsId){
-		itemPageService.generateItemHtml(goodsId);
+		jmsTemplate.send(topicPageDestination, new MessageCreator() {
+			@Override
+			public Message createMessage(Session session) throws JMSException {
+				return session.createTextMessage(goodsId.toString());
+			}
+		});
 	}
 }

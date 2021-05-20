@@ -26,5 +26,19 @@
     <bean id="queueSolrDestination" class="org.apache.activemq.command.ActiveMQQueue">
         <constructor-arg value="dongyimai_queue_solr"/>
     </bean>
+    <bean id="queueSolrDeleteDestination" class="org.apache.activemq.command.ActiveMQQueue">
+        <constructor-arg value="dongyimai_queue_solr_delete"/>
+    </bean>
+
+    <!--订阅模式文本信息，用于生成静态页面-->
+    <bean id="topicPageDestination" class="org.apache.activemq.command.ActiveMQTopic">
+        <constructor-arg value="dongyimai_topic_page"/>
+    </bean>
+
+    <!--这个是订阅模式  用于删除页面-->
+    <bean id="topicPageDeleteDestination" class="org.apache.activemq.command.ActiveMQTopic">
+        <constructor-arg value="dongyimai_topic_page_delete"/>
+    </bean>
+
 </beans>
 
