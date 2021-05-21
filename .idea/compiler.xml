@@ -19,6 +19,7 @@
         <module name="dongyimai_pojo" />
         <module name="dongyimai_search_web" />
         <module name="dongyimai_user_service" />
+        <module name="dongyimai_mail_service" />
         <module name="dongyimai_content_service" />
         <module name="dongyimai_portal_web" />
         <module name="dongyimai_sms_service" />

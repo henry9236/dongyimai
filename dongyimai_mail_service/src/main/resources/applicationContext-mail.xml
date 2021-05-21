@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/context 
+    http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <context:property-placeholder location="classpath:properties/mail.properties"/>
+    <context:component-scan base-package="com.mail"/>
+    <!-- 使用Spring提供的发送电子邮件的高级抽象类 -->
+    <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+        <!-- 邮件smtp服务器地址 -->
+        <property name="host" value="smtp.126.com"/>
+        <!-- 邮箱用户名 -->
+        <property name="username" value="ne31415@126.com"/>
+        <!-- 邮箱授权码密码 -->
+        <property name="password" value="NJBTYHHIRKHBEUNP"/>
+        <!-- 编码格式 -->
+        <property name="defaultEncoding" value="UTF-8"/>
+        <!-- 邮箱服务器属性设置 -->
+        <property name="javaMailProperties">
+            <props>
+                <!-- 邮箱服务器是否支持验证 -->
+                <prop key="mail.smtp.auth">true</prop>
+                <!-- 邮箱服务器连接超时时间  毫秒-->
+                <prop key="mail.smtp.timeout">300000</prop>
+            </props>
+        </property>
+    </bean>
+
+    <!-- 真正可以产生Connection的ConnectionFactory，由对应的 JMS服务厂商提供-->
+    <bean id="targetConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+        <property name="brokerURL" value="tcp://192.168.188.128:61616"/>
+    </bean>
+    <!-- Spring用于管理真正的ConnectionFactory的ConnectionFactory -->
+    <bean id="connectionFactory" class="org.springframework.jms.connection.SingleConnectionFactory">
+        <!-- 目标ConnectionFactory对应真实的可以产生JMS Connection的ConnectionFactory -->
+        <property name="targetConnectionFactory" ref="targetConnectionFactory"/>
+    </bean>
+    <!--消息队列-->
+    <bean id="queueMailDestination" class="org.apache.activemq.command.ActiveMQQueue">
+        <constructor-arg value="dongyimai_queue_mail"/>
+    </bean>
+
+    <!-- 消息监听容器 -->
+    <bean class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+        <property name="connectionFactory" ref="connectionFactory" />
+        <property name="destination" ref="queueMailDestination" />
+        <property name="messageListener" ref="mailMessageListener" />
+    </bean>
+
+</beans>
