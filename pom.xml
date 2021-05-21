@@ -25,6 +25,7 @@
         <module>dongyimai_page_interface</module>
         <module>dongyimai_page_service</module>
         <module>dongyimai_page_web</module>
+        <module>dongyimai_sms_service</module>
     </modules>
     <packaging>pom</packaging>
 

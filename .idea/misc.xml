@@ -11,6 +11,7 @@
     <file type="web" url="file://$PROJECT_DIR$/dongyimai_search_web" />
     <file type="web" url="file://$PROJECT_DIR$/dongyimai_sellergoods_service" />
     <file type="web" url="file://$PROJECT_DIR$/dongyimai_shop_web" />
+    <file type="web" url="file://$PROJECT_DIR$/dongyimai_sms_service" />
   </component>
   <component name="MavenProjectsManager">
     <option name="originalFiles">
