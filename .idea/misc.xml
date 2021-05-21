@@ -12,12 +12,15 @@
     <file type="web" url="file://$PROJECT_DIR$/dongyimai_sellergoods_service" />
     <file type="web" url="file://$PROJECT_DIR$/dongyimai_shop_web" />
     <file type="web" url="file://$PROJECT_DIR$/dongyimai_sms_service" />
+    <file type="web" url="file://$PROJECT_DIR$/dongyimai_user_service" />
+    <file type="web" url="file://$PROJECT_DIR$/dongyimai_user_web" />
   </component>
   <component name="MavenProjectsManager">
     <option name="originalFiles">
       <list>
         <option value="$PROJECT_DIR$/pom.xml" />
         <option value="$PROJECT_DIR$/dongyimai_pojo/pom.xml" />
+        <option value="$PROJECT_DIR$/dongyimai_user_service/pom.xml" />
       </list>
     </option>
   </component>
