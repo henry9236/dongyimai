@@ -36,5 +36,10 @@
         <constructor-arg value="dongyimai_queue_sms"/>
     </bean>
 
+    <bean class="org.apache.activemq.command.ActiveMQQueue" id="queueMailDestination">
+        <!--消息队列的名称-->
+        <constructor-arg value="dongyimai_queue_mail"/>
+    </bean>
+
     <import resource="applicationContext-dao.xml"></import>
 </beans>

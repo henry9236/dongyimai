@@ -34,6 +34,8 @@ public class UserServiceImpl implements UserService {
 	private JmsTemplate jmsTemplate;
 	@Autowired
 	private Destination queueSmsDestination;
+	@Autowired
+	private Destination queueMailDestination;
 
 	@Autowired
 	private RedisTemplate<String,Object> redisTemplate;
@@ -65,7 +67,14 @@ public class UserServiceImpl implements UserService {
 		user.setUpdated(new Date());//修改日期
 		String password = DigestUtils.md5Hex(user.getPassword());
 		user.setPassword(password);
-		userMapper.insert(user);		
+		userMapper.insert(user);
+		//给用户邮箱发一封验证邮件，往邮箱消息队列中发送消息
+		jmsTemplate.send(queueMailDestination, new MessageCreator() {
+			@Override
+			public Message createMessage(Session session) throws JMSException {
+				return session.createTextMessage(user.getEmail());
+			}
+		});
 	}
 
 	

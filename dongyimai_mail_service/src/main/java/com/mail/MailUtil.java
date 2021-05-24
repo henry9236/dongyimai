@@ -52,5 +52,4 @@ public class MailUtil {
            return Pattern.matches(REGEX_EMAIL, email);
     }
 
-
 }

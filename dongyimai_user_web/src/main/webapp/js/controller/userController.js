@@ -78,7 +78,7 @@ app.controller('userController' ,function($scope,$controller   ,userService){
 	}
 
 	var phoneVerify = /^(13[0-9]|14[01456879]|15[0-35-9]|16[2567]|17[0-8]|18[0-9]|19[0-35-9])\d{8}$/;    //11位手机号码正则
-
+	var mailVerify = /^([a-z0-9A-Z]+[-|\.]?)+[a-z0-9A-Z]@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\.)+[a-zA-Z]{2,}$/; //邮箱正则
 	$scope.reg=function(){
 		if($scope.entity.password != $scope.password){
 			alert("两次输入的密码不一致，请重新输入");
@@ -86,6 +86,10 @@ app.controller('userController' ,function($scope,$controller   ,userService){
 		}
 		if(!phoneVerify.test($scope.entity.phone)){
 			alert("手机号码格式不正确");
+			return;
+		}
+		if(!mailVerify.test($scope.entity.email)){
+			alert("邮箱格式不正确");
 			return;
 		}
 		userService.add($scope.entity,$scope.smsCode).success(

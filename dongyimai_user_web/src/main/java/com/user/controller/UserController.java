@@ -31,6 +31,7 @@ public class UserController {
 	 * 正则表达式：验证手机号
 	 */
      public static final String REGEX_MOBILE ="^(13[0-9]|14[01456879]|15[0-35-9]|16[2567]|17[0-8]|18[0-9]|19[0-35-9])\\d{8}$";
+
 	/**
 	 * 返回全部列表
 	 * @return
@@ -154,5 +155,4 @@ public class UserController {
 	public static boolean isMobile(String mobile) {
 		return Pattern.matches(REGEX_MOBILE, mobile);
 	}
-
 }
