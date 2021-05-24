@@ -39,5 +39,5 @@
     <dubbo:consumer timeout="30000" />
 
     <import resource="applicationContext-dao.xml"></import>
-
+    <import resource="spring-security.xml"></import>
 </beans>
