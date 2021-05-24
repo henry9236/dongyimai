@@ -52,7 +52,7 @@
     <!-- 单点登出  开始  -->
     <bean id="singleLogoutFilter" class="org.jasig.cas.client.session.SingleSignOutFilter"/>
     <bean id="requestSingleLogoutFilter" class="org.springframework.security.web.authentication.logout.LogoutFilter">
-        <constructor-arg value="http://192.168.188.146:9100/cas/logout?service=http://www.baidu.com"/>
+        <constructor-arg value="http://192.168.188.146:9100/cas/logout?service=http://localhost:9103"/>
         <constructor-arg>
             <bean class="org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler"/>
         </constructor-arg>
