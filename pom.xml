@@ -30,6 +30,9 @@
         <module>dongyimai_user_service</module>
         <module>dongyimai_user_web</module>
         <module>dongyimai_mail_service</module>
+        <module>dongyimai_cart_interface</module>
+        <module>dongyimai_cart_service</module>
+        <module>dongyimai_cart_web</module>
     </modules>
     <packaging>pom</packaging>
 
