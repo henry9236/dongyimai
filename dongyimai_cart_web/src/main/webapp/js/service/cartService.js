@@ -25,6 +25,11 @@ app.service('cartService',function($http){
     this.findAddressList = function(){
         return $http.get('address/findListByLoginUser.do');
     }
+
+    //新增地址列表
+    this.addAddress = function(address){
+        return $http.post('address/add.do',address);
+    }
     //获取登录的用户名
     this.getLoginUserName = function(){
         return $http.get('cart/getLoginUserName.do');

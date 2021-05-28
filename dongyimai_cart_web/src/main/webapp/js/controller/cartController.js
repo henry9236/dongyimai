@@ -70,7 +70,7 @@ app.controller('cartController',
 
         //选责支付方式
         $scope.selectPayType = function(type){
-            $scope.roder.paymentType = type;
+            $scope.order.paymentType = type;
         }
 
         //提交订单，先将订单保存
@@ -81,7 +81,7 @@ app.controller('cartController',
             cartService.submitOrder($scope.order).success(
                 function(response){
                     if(response.success){
-                        if($scope.order.paymenntType=='1'){
+                        if($scope.order.paymentType=='1'){
                             location.href = "pay.html";
                         }else{
                             location.href="paysuccess.html";
@@ -92,4 +92,18 @@ app.controller('cartController',
                 }
             );
         }
+
+        $scope.addAddress=function(){
+            $scope.newAddress.userId = $scope.loginUserName;
+            cartService.addAddress($scope.newAddress).success(
+                function(response) {
+                    if(response.success){
+                        location.reload();
+                    }else{
+                        alert(response.message);
+                    }
+                }
+            );
+        }
+
 });
