@@ -9,11 +9,12 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>dongyimai_cart_web</artifactId>
+    <artifactId>dongyimai_order_service</artifactId>
+
     <packaging>war</packaging>
 
     <dependencies>
-        <!-- Spring -->
+        <!--Spring-->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
@@ -46,7 +47,7 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
         </dependency>
-        <!-- dubbo相关 -->
+        <!--dubbo相关-->
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>dubbo</artifactId>
@@ -80,50 +81,12 @@
             <artifactId>servlet-api</artifactId>
             <scope>provided</scope>
         </dependency>
-        <!-- spring-security身份验证 -->
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-web</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-config</artifactId>
-        </dependency>
-        <!--CAS-->
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-cas</artifactId>
-            <version>4.1.0.RELEASE</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jasig.cas.client</groupId>
-            <artifactId>cas-client-core</artifactId>
-            <version>3.3.3</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>log4j-over-slf4j</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
         <!--dongyimai-->
         <dependency>
             <groupId>offcn</groupId>
-            <artifactId>dongyimai_common</artifactId>
+            <artifactId>dongyimai_order_interface</artifactId>
             <version>1.0</version>
         </dependency>
-        <dependency>
-            <groupId>offcn</groupId>
-            <artifactId>dongyimai_cart_interface</artifactId>
-            <version>1.0</version>
-        </dependency>
-        <dependency>
-            <groupId>offcn</groupId>
-            <artifactId>dongyimai_user_interface</artifactId>
-            <version>1.0</version>
-        </dependency>
-        <!--因为要使用redis，在配置redis时是通过dao导入properties文件的，所以需要导入dao，通过dao。xml来引入redis-->
         <dependency>
             <groupId>offcn</groupId>
             <artifactId>dongyimai_dao</artifactId>
@@ -131,21 +94,25 @@
         </dependency>
         <dependency>
             <groupId>offcn</groupId>
-            <artifactId>dongyimai_order_interface</artifactId>
+            <artifactId>dongyimai_common</artifactId>
             <version>1.0</version>
-            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>offcn</groupId>
+            <artifactId>dongyimai_pojo</artifactId>
+            <version>1.0</version>
         </dependency>
     </dependencies>
 
     <build>
         <plugins>
-            <!-- 配置Tomcat插件 -->
+            <!--tomcat插件-->
             <plugin>
                 <groupId>org.apache.tomcat.maven</groupId>
                 <artifactId>tomcat7-maven-plugin</artifactId>
                 <configuration>
                     <path>/</path>
-                    <port>9107</port>
+                    <port>9008</port>
                 </configuration>
             </plugin>
         </plugins>

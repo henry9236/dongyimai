@@ -73,4 +73,23 @@ app.controller('cartController',
             $scope.roder.paymentType = type;
         }
 
+        //提交订单，先将订单保存
+        $scope.submitOrder = function(){
+            $scope.order.receiverAreaName = $scope.address.address;//地址
+            $scope.order.receiverMobile = $scope.address.mobile;//手机
+            $scope.order.receiver = $scope.address.contact;//联系人
+            cartService.submitOrder($scope.order).success(
+                function(response){
+                    if(response.success){
+                        if($scope.order.paymenntType=='1'){
+                            location.href = "pay.html";
+                        }else{
+                            location.href="paysuccess.html";
+                        }
+                    }else{
+                        alert(response.message);
+                    }
+                }
+            );
+        }
 });

@@ -33,6 +33,8 @@
         <module>dongyimai_cart_interface</module>
         <module>dongyimai_cart_service</module>
         <module>dongyimai_cart_web</module>
+        <module>dongyimai_order_interface</module>
+        <module>dongyimai_order_service</module>
     </modules>
     <packaging>pom</packaging>
 

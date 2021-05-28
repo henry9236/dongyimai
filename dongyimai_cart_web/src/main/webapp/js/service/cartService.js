@@ -29,4 +29,9 @@ app.service('cartService',function($http){
     this.getLoginUserName = function(){
         return $http.get('cart/getLoginUserName.do');
     }
+
+    //保存订单
+    this.submitOrder=function(order){
+        return $http.post('order/add.do',order);
+    }
 });
