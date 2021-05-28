@@ -1,14 +1,13 @@
 package com.order.service.impl;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import com.dongyimai.bean.ItemCart;
-import com.dongyimai.bean.TbOrder;
-import com.dongyimai.bean.TbOrderExample;
-import com.dongyimai.bean.TbOrderItem;
+import com.dongyimai.bean.*;
 import com.dongyimai.dao.TbOrderItemMapper;
 import com.dongyimai.dao.TbOrderMapper;
+import com.dongyimai.dao.TbPayLogMapper;
 import com.dongyimai.result.PageResult;
 import com.offcn.utils.IdWorker;
 import com.order.service.OrderService;
@@ -39,6 +38,8 @@ public class OrderServiceImpl implements OrderService {
 	@Autowired
 	private IdWorker idWorker;
 
+	@Autowired
+	private TbPayLogMapper payLogMapper;
 	/**
 	 * 查询全部
 	 */
@@ -64,6 +65,11 @@ public class OrderServiceImpl implements OrderService {
 	public void add(TbOrder order) {
 		//得到购物车数据,从redis中通过登录用户名获取购物车ItemCartList
 		List<ItemCart> cartList = (List<ItemCart>) redisTemplate.boundHashOps("cartList").get(order.getUserId());
+		//订单ID列表
+		List<String> orderIdList = new ArrayList();
+		//总金额（元）
+		double total_money = 0;
+
 		//每个商家生成一个order
 		for(ItemCart cart : cartList){
 			//使用ID生成器获取随机数
@@ -103,6 +109,39 @@ public class OrderServiceImpl implements OrderService {
 			tbOrder.setPayment(new BigDecimal(money));
 			//将订单（商家订单）保存到数据中
 			orderMapper.insert(tbOrder);
+			//添加到订单列表
+			orderIdList.add(orderId+"");
+			//累加到总金额
+			total_money+=money;
+		}
+		//如果是支付宝支付
+		if("1".equals(order.getPaymentType())){
+			TbPayLog paylog = new TbPayLog();
+			//通过随机数生成交易订单号，后续提交给支付宝
+			paylog.setOutTradeNo(idWorker.nextId()+"");
+			//创建时间
+			paylog.setCreateTime(new Date());
+			//订单号列表，逗号分隔,替换调arrayList数组toString自动添加的【】 和空格
+			String idList = orderIdList.toString().replace("[","").replace("]","").replace(" ","");
+			paylog.setOrderList(idList);//订单号列表，逗号分隔
+			paylog.setPayType("1");//支付类型
+			//把元转换成分
+			System.out.println("合计金额:"+total_money);
+			BigDecimal total_money1 = BigDecimal.valueOf(total_money);
+			BigDecimal cj = BigDecimal.valueOf(100d);
+			//高精度乘法
+			BigDecimal bigDecimal = total_money1.multiply(cj);
+			double hj=total_money*100;
+			System.out.println("合计:"+hj);
+			System.out.println("高精度处理:"+bigDecimal.toBigInteger().longValue());
+			paylog.setTotalFee(bigDecimal.toBigInteger().longValue());
+
+			paylog.setTradeState("0");//支付状态
+			paylog.setUserId(order.getUserId());//用户ID
+			//把支付日日志保存到数据库和redis中
+			payLogMapper.insert(paylog);
+			redisTemplate.boundHashOps("payLog").put(order.getUserId(), paylog);
+
 		}
 		//从redis中移除当前用户的购物车
 		redisTemplate.boundHashOps("cartList").delete(order.getUserId());
@@ -183,5 +222,46 @@ public class OrderServiceImpl implements OrderService {
 		return new PageResult(page.getTotal(), page.getResult());
 	}
 
+	/**
+	 * 根据用户查询paylog
+	 *
+	 * @param userId
+	 * @return
+	 */
+	@Override
+	public TbPayLog searchPaylogInRedis(String userId) {
+		return (TbPayLog) redisTemplate.boundHashOps("payLog").get(userId);
+	}
 
+	/**
+	 * 修改订单状态
+	 *
+	 * @param out_trade_no   订单号
+	 * @param transaction_id 支付宝返回的交易流水号
+	 */
+	@Override
+	public void updateOrderStatus(String out_trade_no, String transaction_id) {
+		//从数据库中获取paylog 通过传入的订单号
+		TbPayLog payLog = payLogMapper.selectByPrimaryKey(out_trade_no);
+		//更新paylog
+		payLog.setPayTime(new Date());
+		payLog.setTradeState("1");//已支付
+		payLog.setTransactionId(transaction_id);//交易号
+		payLogMapper.updateByPrimaryKey(payLog);
+		//更新paylog 中的order 的订单状态
+		String ids = payLog.getOrderList();
+		String[] orderIdList = ids.split(",");
+
+		for(String orderId : orderIdList){
+			//通过orderid获取 Order
+			TbOrder order = orderMapper.selectByPrimaryKey(Long.parseLong(orderId));
+			//更新order的数据
+			if(order!=null){
+				order.setStatus("2");//已付款
+				orderMapper.updateByPrimaryKey(order);
+			}
+		}
+		//清除Redis里面的数据
+		redisTemplate.boundHashOps("payLog").delete(payLog.getUserId());
+	}
 }

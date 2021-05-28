@@ -1,12 +1,16 @@
 package com.cart.controller;
 
 import com.alibaba.dubbo.config.annotation.Reference;
+import com.dongyimai.bean.TbPayLog;
 import com.dongyimai.result.Result;
 import com.offcn.utils.IdWorker;
+import com.order.service.OrderService;
 import com.pay.service.AliPayService;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -18,11 +22,20 @@ public class PayController {
     //从pay_service注入
     @Reference
     private AliPayService aliPayService;
+    @Reference
+    private OrderService orderService;
 
     @RequestMapping("/createNative")
     public Map createNative(){
-        IdWorker idWorker = new IdWorker();
-        return aliPayService.createNative(idWorker.nextId()+"","1");
+        //获取当前登录的用户名
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        //根据用户名在redis中查找支付表数据,
+        TbPayLog paylog = orderService.searchPaylogInRedis(username);
+        //判断reids中是否有 当前用户的支付表单数据
+        if(null==paylog){
+            return new HashMap();
+        }
+        return aliPayService.createNative(paylog.getOutTradeNo(),paylog.getTotalFee()+"");
     }
     @RequestMapping("/queryPayStatus")
     public Result queryPayStatus(String out_trade_no){
@@ -43,6 +56,8 @@ public class PayController {
             }
             if(map.get("tradestatus")!=null&&map.get("tradestatus").equals("TRADE_SUCCESS")){//如果成功
                 result=new  Result(true, "支付成功");
+                //修改订单状态
+                orderService.updateOrderStatus(out_trade_no, map.get("trade_no"));
                 break;
             }
             if(map.get("tradestatus")!=null&&map.get("tradestatus").equals("TRADE_CLOSED")){//如果成功

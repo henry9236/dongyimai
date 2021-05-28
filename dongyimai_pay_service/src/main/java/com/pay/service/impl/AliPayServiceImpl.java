@@ -33,7 +33,8 @@ public class AliPayServiceImpl implements AliPayService {
         Map<String,String> map=new HashMap<String, String>();
         //创建预下单请求对象
         AlipayTradePrecreateRequest alipayRequest = new AlipayTradePrecreateRequest();
-        //转换下单金额按照元
+
+        //转换下单金额按照元，传入的以分为单位
         long total = Long.parseLong(total_fee);
         BigDecimal bigTotal = BigDecimal.valueOf(total);
         BigDecimal cs = BigDecimal.valueOf(100d);

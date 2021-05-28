@@ -1,5 +1,6 @@
 package com.order.service;
 import com.dongyimai.bean.TbOrder;
+import com.dongyimai.bean.TbPayLog;
 import com.dongyimai.result.PageResult;
 
 import java.util.List;
@@ -56,5 +57,18 @@ public interface OrderService {
 	 * @return
 	 */
 	public PageResult findPage(TbOrder order, int pageNum,int pageSize);
-	
+
+	/**
+	 * 根据用户查询paylog
+	 * @param userId
+	 * @return
+	 */
+	public TbPayLog searchPaylogInRedis(String userId);
+
+	/**
+	 * 修改订单状态
+	 * @param out_trade_no 订单号
+	 * @param transaction_id 支付宝返回的交易流水号
+	 */
+	public void updateOrderStatus(String out_trade_no,String transaction_id);
 }

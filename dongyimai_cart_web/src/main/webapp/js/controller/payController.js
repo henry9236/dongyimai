@@ -1,4 +1,4 @@
-app.controller('payController',function($scope,payService){
+app.controller('payController',function($scope,$location,payService){
    //本地生产二维码
    $scope.createNative=function(){
        payService.createNative().success(
@@ -25,7 +25,7 @@ app.controller('payController',function($scope,payService){
         payService.queryPayStatus(out_trade_no).success(
             function(response){
             if(response.success){
-                location.href="paysuccess.html";
+                location.href="paysuccess.html#?money="+$scope.money;
             }else{
                 if(response.message=='二维码超时'){
                     $scope.tiemoutview = false;
@@ -36,6 +36,8 @@ app.controller('payController',function($scope,payService){
         });
     }
 
-
+    $scope.getMoney=function(){
+        return $location.search()['money'];
+    }
 
 });
