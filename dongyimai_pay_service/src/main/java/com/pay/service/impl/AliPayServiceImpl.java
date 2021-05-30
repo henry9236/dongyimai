@@ -3,8 +3,10 @@ package com.pay.service.impl;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
+import com.alipay.api.request.AlipayTradeCancelRequest;
 import com.alipay.api.request.AlipayTradePrecreateRequest;
 import com.alipay.api.request.AlipayTradeQueryRequest;
+import com.alipay.api.response.AlipayTradeCancelResponse;
 import com.alipay.api.response.AlipayTradePrecreateResponse;
 
 import com.alipay.api.response.AlipayTradeQueryResponse;
@@ -107,5 +109,40 @@ public class AliPayServiceImpl implements AliPayService {
             e.printStackTrace();
         }
         return map;
+    }
+
+    /**
+     * 关闭支付
+     *
+     * @param out_trade_no
+     * @return
+     */
+    @Override
+    public Map closePay(String out_trade_no) {
+        Map<String,String> map=new HashMap<String, String>();
+        //撤销交易请求对象
+        AlipayTradeCancelRequest request = new AlipayTradeCancelRequest();
+        request.setBizContent("{" +
+                "    \"out_trade_no\":\""+out_trade_no+"\"," +
+                "    \"trade_no\":\"\"}"); //设置业务参数
+
+        try {
+            AlipayTradeCancelResponse response = alipayClient.execute(request);
+            String code=response.getCode();
+
+            if(code.equals("10000")){
+
+                System.out.println("返回值:"+response.getBody());
+                map.put("code", code);
+                map.put("out_trade_no", out_trade_no);
+                return map;
+            }
+        } catch (AlipayApiException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return null;
+        }
+
+        return null;
     }
 }

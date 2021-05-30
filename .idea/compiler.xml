@@ -8,6 +8,7 @@
         <outputRelativeToContentRoot value="true" />
         <module name="dongyimai_pay_interface" />
         <module name="dongyimai_user_web" />
+        <module name="dongyimai_seckill_service" />
         <module name="dongyimai_common" />
         <module name="dongyimai_solr_util" />
         <module name="dongyimai_pojo" />
@@ -32,7 +33,9 @@
         <module name="dongyimai_sellergoods_interface" />
         <module name="dongyimai_search_web" />
         <module name="dongyimai_user_service" />
+        <module name="dongyimai_seckill_web" />
         <module name="dongyimai_sms_service" />
+        <module name="dongyimai_seckill_interface" />
         <module name="dongyimai_order_service" />
         <module name="dongyimai_pay_service" />
       </profile>

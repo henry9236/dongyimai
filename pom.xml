@@ -37,6 +37,9 @@
         <module>dongyimai_order_service</module>
         <module>dongyimai_pay_interface</module>
         <module>dongyimai_pay_service</module>
+        <module>dongyimai_seckill_interface</module>
+        <module>dongyimai_seckill_service</module>
+        <module>dongyimai_seckill_web</module>
     </modules>
     <packaging>pom</packaging>
 

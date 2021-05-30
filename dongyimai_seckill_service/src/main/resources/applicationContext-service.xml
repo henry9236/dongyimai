@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/context 
+    http://www.springframework.org/schema/context/spring-context.xsd
+    http://code.alibabatech.com/schema/dubbo
+    http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+    <context:component-scan base-package="com.seckill.service.utils"/>
+    <!--服务提供方向zookeeper注册中心提交服务-->
+    <dubbo:protocol name="dubbo" port="20890"></dubbo:protocol>
+    <dubbo:application name="dongyimai-seckill-service"/>
+    <dubbo:registry address="zookeeper://192.168.188.128:2181"/>
+    <dubbo:annotation package="com.seckill.service.impl"/>
+
+    <bean id="idWorker" class="com.offcn.utils.IdWorker">
+        <!-- 进程ID -->
+        <constructor-arg index="0" value="0"></constructor-arg>
+        <!-- 数据中心ID -->
+        <constructor-arg index="1" value="0"></constructor-arg>
+    </bean>
+
+    <!--载入Dao中有关mybatis数据访问的spring配置-->
+    <import resource="applicationContext-dao.xml"/>
+
+</beans>
