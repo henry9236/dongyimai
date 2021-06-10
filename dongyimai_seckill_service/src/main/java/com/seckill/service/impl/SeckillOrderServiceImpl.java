@@ -140,7 +140,7 @@ public class SeckillOrderServiceImpl implements SeckillOrderService {
 
 		String appid = "createOrderLock";
 		//获取redis分布式锁
-		long ex = 3 * 1000L;
+		long ex= 1 * 1000L;
 		String value = String.valueOf(System.currentTimeMillis() + ex);
 		boolean lock = redisLock.lock(appid,value);
 
